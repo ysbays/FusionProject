@@ -1,0 +1,1962 @@
+
+```html
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>FusionOSINT</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@500;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+[data-theme="dark"]{
+--bg:#000;--content-bg:#0a0a0a;--bg2:#141414;--card:#1a1a1a;--card-h:#222;
+--sidebar-bg:#000;--t1:#fff;--t2:#b8b8b8;--t3:#666;--border:#262626;--border-bright:#333;
+--accent:#6366f1;--accent-m:rgba(99,102,241,.12);--accent-b:rgba(99,102,241,.3);
+--tag-bg:rgba(255,255,255,.08);--tag-c:#ddd;--toggle-bg:#1a1a1a;--scroll:#333;
+--btn-bg:#fff;--btn-color:#000;--green:#5cb885;--red:#ef4444;--orange:#f59e0b;
+--overlay:rgba(0,0,0,.75);--pro:#f59e0b;--pro-bg:rgba(245,158,11,.1);--pro-border:rgba(245,158,11,.3);
+--bot:#0088cc;--bot-bg:rgba(0,136,204,.1);--bot-border:rgba(0,136,204,.3);
+}
+[data-theme="light"]{
+--bg:#eef0f4;--content-bg:#fff;--bg2:#f5f5f7;--card:#fff;--card-h:#fafafa;
+--sidebar-bg:#f5f5f7;--t1:#000;--t2:#444;--t3:#888;--border:#dadada;--border-bright:#c0c0c0;
+--accent:#4f46e5;--accent-m:rgba(79,70,229,.08);--accent-b:rgba(79,70,229,.2);
+--tag-bg:rgba(0,0,0,.06);--tag-c:#333;--toggle-bg:#e0e0e0;--scroll:#bbb;
+--btn-bg:#000;--btn-color:#fff;--green:#3a9d6b;--red:#dc2626;--orange:#d97706;
+--overlay:rgba(0,0,0,.5);--pro:#d97706;--pro-bg:rgba(217,119,6,.08);--pro-border:rgba(217,119,6,.25);
+--bot:#0077b5;--bot-bg:rgba(0,119,181,.08);--bot-border:rgba(0,119,181,.25);
+}
+
+body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;transition:background .4s cubic-bezier(.4,0,.2,1),color .4s cubic-bezier(.4,0,.2,1)}
+button,a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+
+/* ════════ ЗАГРУЗОЧНАЯ АНИМАЦИЯ ════════ */
+#preloader{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:#000;z-index:99999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .8s cubic-bezier(.4,0,.2,1),visibility .8s;
+}
+#preloader.hide{opacity:0;visibility:hidden;pointer-events:none}
+
+.preloader-logo{
+  width:90px;height:90px;
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  border-radius:22px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-family:'Orbitron',sans-serif;font-size:2.5rem;
+  margin-bottom:1.5rem;
+  position:relative;
+  animation:logoPulse 2s cubic-bezier(.4,0,.2,1) infinite;
+  box-shadow:0 0 60px rgba(99,102,241,.4);
+}
+.preloader-logo::before{
+  content:'';
+  position:absolute;
+  inset:-4px;
+  border-radius:24px;
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  z-index:-1;
+  filter:blur(20px);
+  opacity:.5;
+  animation:logoGlow 2s cubic-bezier(.4,0,.2,1) infinite;
+}
+@keyframes logoPulse{
+  0%,100%{transform:scale(1) rotate(0deg)}
+  50%{transform:scale(1.08) rotate(180deg)}
+}
+@keyframes logoGlow{
+  0%,100%{opacity:.4;filter:blur(20px)}
+  50%{opacity:.8;filter:blur(30px)}
+}
+
+.preloader-text{
+  font-family:'Orbitron',sans-serif;
+  font-size:1.4rem;
+  font-weight:700;
+  letter-spacing:6px;
+  color:#fff;
+  margin-bottom:.8rem;
+  animation:textFade .8s cubic-bezier(.4,0,.2,1);
+}
+.preloader-text .accent{
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.preloader-sub{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  letter-spacing:4px;
+  color:#666;
+  margin-bottom:2rem;
+  text-transform:uppercase;
+  animation:textFade 1s cubic-bezier(.4,0,.2,1);
+}
+
+.preloader-bar{
+  width:240px;
+  height:3px;
+  background:#1a1a1a;
+  border-radius:3px;
+  overflow:hidden;
+  position:relative;
+}
+.preloader-bar-fill{
+  height:100%;
+  width:30%;
+  background:linear-gradient(90deg,transparent,#6366f1,#8b5cf6,transparent);
+  border-radius:3px;
+  animation:barSlide 1.5s cubic-bezier(.4,0,.2,1) infinite;
+}
+@keyframes barSlide{
+  0%{transform:translateX(-100%)}
+  100%{transform:translateX(400%)}
+}
+@keyframes textFade{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.preloader-status{
+  margin-top:1.2rem;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;
+  color:#444;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  animation:statusBlink 1.5s ease-in-out infinite;
+}
+@keyframes statusBlink{
+  0%,100%{opacity:1}
+  50%{opacity:.4}
+}
+
+/* ════════ ОСНОВНОЙ САЙТ FADE-IN ════════ */
+.app-wrapper{
+  opacity:0;
+  animation:appFadeIn .8s cubic-bezier(.4,0,.2,1) .3s forwards;
+}
+@keyframes appFadeIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ════════ HEADER ════════ */
+.h{position:sticky;top:0;z-index:100;background:var(--sidebar-bg);border-bottom:1px solid var(--border);padding:0 1rem;transition:background .4s cubic-bezier(.4,0,.2,1)}
+.hi{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px;gap:8px}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer;flex-shrink:0;transition:transform .25s cubic-bezier(.4,0,.2,1)}
+.logo:hover{transform:translateY(-1px)}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),#8b5cf6);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-family:'Orbitron',sans-serif;font-size:.9rem;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.logo:hover .logo-icon{transform:rotate(10deg) scale(1.05)}
+.logo-text{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:700;letter-spacing:1.5px;color:var(--t1);line-height:1}
+.logo-sub{font-size:.45rem;color:var(--t3);letter-spacing:3px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-top:3px;font-weight:600}
+.hr{display:flex;align-items:center;gap:.5rem}
+.tt{width:38px;height:24px;border-radius:12px;background:var(--toggle-bg);border:1px solid var(--border);cursor:pointer;position:relative;flex-shrink:0;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.tt:hover{border-color:var(--accent-b)}
+.td{width:18px;height:18px;border-radius:50%;background:var(--t1);position:absolute;top:2px;left:2px;transition:transform .35s cubic-bezier(.4,0,.2,1),background .3s;display:flex;align-items:center;justify-content:center;font-size:10px;pointer-events:none}
+[data-theme="light"] .td{transform:translateX(14px)}
+
+.user-btn{display:flex;align-items:center;gap:6px;background:var(--accent-m);border:1px solid var(--accent-b);border-radius:8px;padding:4px 10px 4px 4px;cursor:pointer;height:36px;color:var(--t1);font-weight:600;font-size:.8rem;font-family:'Inter',sans-serif;-webkit-appearance:none;flex-shrink:0;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.user-btn:hover{background:var(--accent);color:#fff;transform:translateY(-1px);box-shadow:0 4px 12px rgba(99,102,241,.3)}
+.user-btn .ua{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#fff;font-family:'Orbitron',sans-serif;overflow:hidden;flex-shrink:0}
+.user-btn .ua img{width:100%;height:100%;object-fit:cover}
+.user-btn .un{max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-btn .pro-tag{background:var(--pro-bg);color:var(--pro);border:1px solid var(--pro-border);padding:1px 6px;border-radius:4px;font-size:.55rem;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:.5px}
+.login-btn{background:var(--accent);color:#fff;border:none;padding:0 16px;height:36px;border-radius:8px;cursor:pointer;font-weight:700;font-size:.8rem;font-family:'Inter',sans-serif;-webkit-appearance:none;flex-shrink:0;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(99,102,241,.4)}
+.mt{display:none;background:var(--accent-m);border:1px solid var(--accent-b);border-radius:8px;color:var(--t1);font-size:1.2rem;cursor:pointer;padding:0 12px;-webkit-appearance:none;height:36px;align-items:center;font-family:'Inter',sans-serif;font-weight:600;transition:all .2s}
+
+/* ════════ LAYOUT ════════ */
+@media(min-width:901px){
+  .mc{display:flex;min-height:calc(100vh - 58px)}
+  .side{width:250px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--border);position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto;padding:1rem 0;transition:background .4s}
+  .ct{flex:1;min-width:0;background:var(--content-bg);padding:2rem;border-left:1px solid var(--border);transition:background .4s}
+  .ci{max-width:1100px;margin:0 auto}
+  .mt,.mobile-menu{display:none}
+}
+@media(max-width:900px){
+  .side{display:none}
+  .mt{display:flex}
+  .mobile-menu{display:block;background:var(--sidebar-bg);border-bottom:2px solid var(--border-bright);max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,0,.2,1)}
+  .mobile-menu.open{max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .mc{display:block}
+  .ct{background:var(--content-bg);padding:1.2rem 1rem;min-height:calc(100vh - 58px);transition:background .4s}
+}
+@media(max-width:600px){
+  .hi{height:52px;gap:4px}
+  .logo-icon{width:32px;height:32px;font-size:.8rem}
+  .logo-text{font-size:.88rem}
+  .logo-sub{display:none}
+  .user-btn .un{display:none}
+  .user-btn{padding:3px}
+  .login-btn{padding:0 12px;font-size:.75rem}
+  .ct{padding:1rem .7rem}
+}
+
+/* ════════ ВКЛАДКА БОТА ════════ */
+.bot-pinned{
+  margin:.5rem 1.1rem 0;
+  background:linear-gradient(135deg,var(--bot-bg),var(--accent-m));
+  border:1px solid var(--bot-border);
+  border-radius:10px;
+  padding:10px 12px;
+  cursor:pointer;
+  display:flex;align-items:center;gap:9px;
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+  position:relative;
+  overflow:hidden;
+}
+.bot-pinned::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(135deg,transparent,rgba(99,102,241,.1),transparent);
+  transform:translateX(-100%);
+  transition:transform .6s cubic-bezier(.4,0,.2,1);
+}
+.bot-pinned:hover{
+  border-color:var(--bot);
+  transform:translateY(-1px);
+  box-shadow:0 4px 14px rgba(0,136,204,.15);
+}
+.bot-pinned:hover::before{transform:translateX(100%)}
+.bot-pinned-icon{
+  width:32px;height:32px;
+  background:linear-gradient(135deg,#0088cc,#00a8ff);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;
+  flex-shrink:0;
+  box-shadow:0 2px 8px rgba(0,136,204,.3);
+}
+.bot-pinned-info{flex:1;min-width:0;line-height:1.2;position:relative;z-index:1}
+.bot-pinned-name{font-size:.82rem;font-weight:700;color:var(--t1);display:flex;align-items:center;gap:5px}
+.bot-pinned-tag{
+  background:var(--bot);color:#fff;
+  font-size:.5rem;font-weight:700;
+  padding:1px 5px;border-radius:3px;
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:.5px;
+}
+.bot-pinned-desc{font-size:.66rem;color:var(--t2);margin-top:1px;font-weight:500}
+.bot-pinned-arrow{
+  color:var(--bot);font-size:.85rem;font-weight:700;
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+  position:relative;z-index:1;
+}
+.bot-pinned:hover .bot-pinned-arrow{transform:translateX(3px)}
+
+/* ════════ MENU ITEMS ════════ */
+.st{padding:.6rem 1.1rem .3rem;font-size:.58rem;text-transform:uppercase;letter-spacing:2px;color:var(--t3);font-family:'JetBrains Mono',monospace;font-weight:700}
+.ni{display:flex;align-items:center;gap:9px;padding:11px 1.1rem;cursor:pointer;border-left:3px solid transparent;font-size:.86rem;color:var(--t2);min-height:44px;font-weight:500;transition:all .2s cubic-bezier(.4,0,.2,1);position:relative}
+.ni::before{
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:0;
+  background:linear-gradient(90deg,var(--accent-m),transparent);
+  transition:width .25s cubic-bezier(.4,0,.2,1);
+  z-index:-1;
+}
+.ni:hover::before{width:100%}
+.ni:active{background:var(--accent-m);color:var(--t1)}
+.ni.a{background:var(--accent-m);color:var(--t1);border-left-color:var(--accent);font-weight:600}
+.ni .ic{font-size:1rem;width:22px;text-align:center;flex-shrink:0;pointer-events:none}
+.ni .nm{flex:1;pointer-events:none}
+.ni .b{margin-left:auto;background:var(--accent-m);color:var(--t2);padding:2px 7px;border-radius:7px;font-size:.6rem;font-family:'JetBrains Mono',monospace;font-weight:700;flex-shrink:0;pointer-events:none}
+.ni .pro-lock{margin-left:auto;color:var(--pro);font-size:.65rem;pointer-events:none;font-weight:700}
+.sd{height:1px;background:var(--border);margin:.4rem 1.1rem}
+
+/* ════════ CONTENT ════════ */
+.ph{margin-bottom:1.3rem;padding-bottom:1rem;border-bottom:1px solid var(--border);animation:slideDown .5s cubic-bezier(.4,0,.2,1)}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.ph h1{font-size:1.4rem;font-weight:700;margin-bottom:.3rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bc{font-size:.7rem;color:var(--t3);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:5px}
+.bc a{color:var(--t2);text-decoration:none;cursor:pointer;transition:color .2s}
+.bc a:hover{color:var(--t1)}
+.spi{font-family:'JetBrains Mono',monospace;font-size:.73rem;color:var(--t3);margin-bottom:1.1rem;display:inline-block;padding:5px 11px;background:var(--bg2);border:1px solid var(--border);border-radius:6px}
+
+.stb{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:.6rem;margin-bottom:1.2rem;animation:fadeUp .5s cubic-bezier(.4,0,.2,1) .1s both}
+.sc{background:var(--card);border:1px solid var(--border-bright);border-radius:10px;padding:.9rem;display:flex;align-items:center;gap:.7rem;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.sc:hover{transform:translateY(-2px);border-color:var(--accent-b);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.sc .si2{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:var(--accent-m);flex-shrink:0;border:1px solid var(--border)}
+.sc .sn{font-size:1.2rem;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--t1);line-height:1}
+.sc .sd2{font-size:.65rem;color:var(--t2);margin-top:2px;font-weight:500}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+
+.tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:.7rem;animation:fadeUp .5s cubic-bezier(.4,0,.2,1) .15s both}
+.tc{background:var(--card);border:1px solid var(--border-bright);border-radius:10px;padding:1rem;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.tc:hover{background:var(--card-h);border-color:var(--accent-b);transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.th{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.4rem;gap:6px}
+.tn{font-size:.88rem;font-weight:700;color:var(--t1);display:flex;align-items:center;gap:5px;min-width:0}
+.tn .te{font-size:1rem;flex-shrink:0}
+.tg2{padding:2px 7px;border-radius:5px;font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;font-family:'JetBrains Mono',monospace;flex-shrink:0;background:var(--tag-bg);color:var(--tag-c);border:1px solid var(--border)}
+.td2{font-size:.8rem;color:var(--t2);line-height:1.45;margin-bottom:.7rem}
+.tft{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-top:.5rem;border-top:1px solid var(--border)}
+.tl{color:var(--t1);text-decoration:none;font-size:.76rem;font-weight:600;padding:5px 9px;margin:-5px -9px;border-radius:5px;transition:all .2s cubic-bezier(.4,0,.2,1)}
+.tl:hover{background:var(--accent-m);color:var(--accent);transform:translateX(2px)}
+.tm{font-size:.6rem;color:var(--t3);font-family:'JetBrains Mono',monospace;font-weight:600}
+
+.hg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.6rem;animation:fadeUp .5s cubic-bezier(.4,0,.2,1) .2s both}
+.hc{background:var(--card);border:1px solid var(--border-bright);border-radius:10px;padding:.9rem;cursor:pointer;min-height:58px;display:flex;flex-direction:column;justify-content:center;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.hc:hover{background:var(--card-h);border-color:var(--accent-b);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.hct{font-size:.83rem;font-weight:700;margin-bottom:.2rem}
+.hcc{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--t2);font-weight:600}
+
+.sec{display:none}
+.sec.a{display:block;animation:secFade .35s cubic-bezier(.4,0,.2,1)}
+@keyframes secFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ════════ BOT PAGE ════════ */
+.bot-hero{
+  background:linear-gradient(135deg,var(--bot-bg),var(--accent-m));
+  border:1px solid var(--bot-border);
+  border-radius:14px;padding:1.8rem;
+  display:flex;gap:1.5rem;align-items:center;margin-bottom:1.5rem;
+  animation:fadeUp .5s cubic-bezier(.4,0,.2,1);
+}
+.bot-hero-img{
+  width:120px;height:120px;border-radius:18px;
+  background:linear-gradient(135deg,#0088cc,#00a8ff);
+  display:flex;align-items:center;justify-content:center;
+  font-size:3.5rem;flex-shrink:0;
+  box-shadow:0 8px 24px rgba(0,136,204,.3);
+}
+.bot-hero-info{flex:1;min-width:0}
+.bot-hero-info h2{font-size:1.4rem;font-weight:700;margin-bottom:.4rem;font-family:'Orbitron',sans-serif;letter-spacing:1px}
+.bot-tag{display:inline-block;padding:4px 12px;background:var(--bot);color:#fff;border-radius:20px;font-size:.65rem;font-family:'JetBrains Mono',monospace;margin-bottom:.7rem;letter-spacing:1px;font-weight:700}
+.bot-hero-info p{color:var(--t2);font-size:.85rem;line-height:1.55;margin-bottom:.8rem}
+.bot-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 26px;background:var(--bot);color:#fff;
+  border:none;border-radius:9px;font-weight:700;font-size:.88rem;
+  cursor:pointer;text-decoration:none;-webkit-appearance:none;min-height:44px;
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 4px 12px rgba(0,136,204,.3);
+}
+.bot-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,136,204,.4)}
+
+.bot-features{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.7rem;margin-top:1.3rem}
+.bot-feat{
+  background:var(--card);border:1px solid var(--border-bright);
+  border-radius:10px;padding:1.1rem;
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+}
+.bot-feat:hover{transform:translateY(-2px);border-color:var(--bot-border);box-shadow:0 4px 12px rgba(0,136,204,.1)}
+.bot-feat-icon{font-size:1.5rem;margin-bottom:.5rem}
+.bot-feat-title{font-size:.85rem;font-weight:700;margin-bottom:.3rem;color:var(--t1)}
+.bot-feat-desc{font-size:.72rem;color:var(--t2);line-height:1.45}
+
+/* ════════ PAYWALL ════════ */
+.paywall{background:var(--card);border:2px solid var(--pro-border);border-radius:14px;padding:2.5rem;text-align:center;max-width:500px;margin:3rem auto;animation:fadeUp .5s cubic-bezier(.4,0,.2,1)}
+.paywall h2{font-size:1.5rem;margin-bottom:.5rem;font-family:'Orbitron',sans-serif}
+.paywall p{color:var(--t2);margin-bottom:1.5rem;line-height:1.6}
+.paywall .price{font-size:2rem;font-weight:800;color:var(--pro);font-family:'JetBrains Mono',monospace;margin-bottom:1rem}
+.paywall .price span{font-size:.9rem;color:var(--t3);font-weight:500}
+.paywall .features{text-align:left;margin-bottom:1.5rem;list-style:none}
+.paywall .features li{padding:.5rem 0;font-size:.88rem;color:var(--t2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.paywall .features li:last-child{border-bottom:none}
+.paywall-btn{background:linear-gradient(135deg,var(--pro),#ef4444);color:#fff;border:none;padding:14px 32px;border-radius:10px;font-weight:700;font-size:1rem;cursor:pointer;font-family:'Inter',sans-serif;min-height:48px;-webkit-appearance:none;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.paywall-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(245,158,11,.4)}
+
+/* ════════ ADMIN PANEL ════════ */
+.admin-table{width:100%;border-collapse:collapse;margin-top:1rem;font-size:.82rem}
+.admin-table th{text-align:left;padding:.8rem .6rem;background:var(--bg2);border-bottom:2px solid var(--border-bright);font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--t3);font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.admin-table td{padding:.7rem .6rem;border-bottom:1px solid var(--border);vertical-align:middle;word-break:break-word}
+.admin-table tr{transition:background .2s}
+.admin-table tr:hover td{background:var(--accent-m)}
+.admin-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.65rem;font-weight:700;font-family:'JetBrains Mono',monospace}
+.admin-badge.role-admin{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.admin-badge.role-user{background:var(--accent-m);color:var(--accent);border:1px solid var(--accent-b)}
+.admin-badge.pro-yes{background:var(--pro-bg);color:var(--pro);border:1px solid var(--pro-border)}
+.admin-badge.pro-no{background:var(--bg2);color:var(--t3);border:1px solid var(--border)}
+.admin-action{padding:4px 10px;border-radius:5px;border:1px solid var(--border-bright);background:transparent;color:var(--t1);font-size:.7rem;cursor:pointer;font-weight:600;-webkit-appearance:none;white-space:nowrap;margin:2px;transition:all .2s cubic-bezier(.4,0,.2,1)}
+.admin-action:hover{background:var(--accent-m);border-color:var(--accent-b);transform:translateY(-1px)}
+.admin-action.danger{color:var(--red);border-color:rgba(239,68,68,.3)}
+.admin-action.danger:hover{background:rgba(239,68,68,.1)}
+.admin-stats{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1rem}
+.admin-stat{background:var(--card);border:1px solid var(--border-bright);border-radius:8px;padding:.8rem 1.2rem;text-align:center;min-width:100px;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.admin-stat:hover{transform:translateY(-2px);border-color:var(--accent-b)}
+.admin-stat .num{font-size:1.5rem;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--accent)}
+.admin-stat .lbl{font-size:.65rem;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.admin-search{width:100%;padding:10px 14px;background:var(--bg2);border:1px solid var(--border-bright);border-radius:8px;color:var(--t1);font-size:.88rem;margin-bottom:1rem;-webkit-appearance:none;transition:border-color .2s}
+.admin-search:focus{outline:none;border-color:var(--accent)}
+.admin-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+@media(max-width:900px){
+  .tg{grid-template-columns:1fr}
+  .stb{grid-template-columns:repeat(2,1fr)}
+  .hg{grid-template-columns:1fr}
+  .admin-table{font-size:.75rem}
+  .admin-table th,.admin-table td{padding:.5rem .4rem}
+  .bot-hero{flex-direction:column;text-align:center;padding:1.4rem}
+  .bot-hero-img{margin:0 auto}
+  .bot-features{grid-template-columns:repeat(2,1fr)}
+  .bot-btn{width:100%;justify-content:center}
+}
+@media(max-width:380px){.stb{grid-template-columns:1fr}.bot-features{grid-template-columns:1fr}}
+
+/* ════════ AUTH MODAL ════════ */
+.auth-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:var(--overlay);z-index:10000;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:modalBg .25s cubic-bezier(.4,0,.2,1)}
+.auth-modal.show{display:flex}
+@keyframes modalBg{from{opacity:0;backdrop-filter:blur(0)}to{opacity:1;backdrop-filter:blur(8px)}}
+.auth-modal-content{width:100%;max-width:420px;max-height:90vh;overflow-y:auto;background:var(--card);border:1px solid var(--border-bright);border-radius:14px;padding:2rem;box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;animation:modalIn .4s cubic-bezier(.4,0,.2,1);-webkit-overflow-scrolling:touch}
+@keyframes modalIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.auth-close{position:absolute;top:12px;right:12px;width:30px;height:30px;background:transparent;border:1px solid var(--border-bright);border-radius:7px;color:var(--t2);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;transition:all .2s}
+.auth-close:hover{background:var(--accent-m);color:var(--t1);transform:rotate(90deg)}
+.auth-modal h1{font-size:1.3rem;font-weight:700;margin-bottom:.3rem;text-align:center;font-family:'Orbitron',sans-serif;letter-spacing:1px}
+.auth-modal .subtitle{text-align:center;color:var(--t2);font-size:.82rem;margin-bottom:1.3rem}
+.field{margin-bottom:.9rem}
+.field label{display:block;font-size:.72rem;font-weight:600;color:var(--t2);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.8px;font-family:'JetBrains Mono',monospace}
+.field input{width:100%;padding:11px 13px;background:var(--bg2);border:1px solid var(--border-bright);border-radius:7px;color:var(--t1);font-size:.92rem;font-family:'Inter',sans-serif;-webkit-appearance:none;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.field input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-m)}
+.field .hint{font-size:.68rem;color:var(--t3);margin-top:.25rem}
+.auth-btn{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-weight:700;font-size:.92rem;cursor:pointer;font-family:'Inter',sans-serif;min-height:44px;-webkit-appearance:none;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .25s cubic-bezier(.4,0,.2,1)}
+.auth-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 14px rgba(99,102,241,.4)}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed}
+.auth-btn.secondary{background:transparent;border:1px solid var(--border-bright);color:var(--t1);margin-top:.5rem}
+.auth-btn.secondary:hover{background:var(--accent-m);border-color:var(--accent-b)}
+.auth-btn.google{background:#fff;color:#000;border:1px solid var(--border-bright);margin-top:.6rem}
+[data-theme="dark"] .auth-btn.google{background:var(--bg2);color:#fff}
+.auth-btn.google:hover{background:var(--card-h)}
+.auth-btn.phone-btn{background:var(--green);margin-top:.5rem}
+.auth-btn.phone-btn:hover{box-shadow:0 4px 14px rgba(92,184,133,.4)}
+.switch-link{text-align:center;margin-top:1.1rem;font-size:.82rem;color:var(--t2)}
+.switch-link span{color:var(--accent);cursor:pointer;font-weight:600;text-decoration:underline;transition:color .2s}
+.switch-link span:hover{color:#8b5cf6}
+.forgot-link{text-align:right;margin-top:-.5rem;margin-bottom:.8rem;font-size:.75rem}
+.forgot-link span{color:var(--accent);cursor:pointer}
+.msg{padding:10px 12px;border-radius:7px;margin-bottom:.8rem;font-size:.82rem;display:flex;align-items:flex-start;gap:7px;line-height:1.4;animation:msgIn .3s cubic-bezier(.4,0,.2,1)}
+@keyframes msgIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.msg.err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red)}
+.msg.ok{background:rgba(92,184,133,.1);border:1px solid rgba(92,184,133,.3);color:var(--green)}
+.msg.warn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:var(--orange)}
+
+.profile-header{display:flex;flex-direction:column;align-items:center;text-align:center;padding-bottom:1.2rem;border-bottom:1px solid var(--border)}
+.avatar{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;color:#fff;margin-bottom:.7rem;font-family:'Orbitron',sans-serif;overflow:hidden;box-shadow:0 4px 16px rgba(99,102,241,.3)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.profile-name{font-size:1.15rem;font-weight:700;margin-bottom:.2rem}
+.profile-email{color:var(--t2);font-size:.8rem;word-break:break-all}
+.verified-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:rgba(92,184,133,.15);border:1px solid rgba(92,184,133,.3);border-radius:10px;font-size:.65rem;color:var(--green);font-weight:600;margin-top:.5rem}
+.profile-pro-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:var(--pro-bg);border:1px solid var(--pro-border);border-radius:10px;font-size:.7rem;color:var(--pro);font-weight:700;margin-top:.4rem;font-family:'JetBrains Mono',monospace;letter-spacing:.5px}
+.profile-info{margin:1rem 0}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:.7rem 0;border-bottom:1px solid var(--border);font-size:.82rem;gap:.8rem}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--t2);font-weight:500;flex-shrink:0}
+.info-value{color:var(--t1);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:.75rem;text-align:right;word-break:break-all}
+.profile-actions{display:flex;flex-direction:column;gap:.4rem;margin-top:.7rem}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+#recaptcha-container{margin:.8rem 0}
+
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--scroll);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+</style>
+</head>
+<body>
+
+<!-- ════════ PRELOADER ════════ -->
+<div id="preloader">
+  <div class="preloader-logo">F</div>
+  <div class="preloader-text">FUSION<span class="accent">OSINT</span></div>
+  <div class="preloader-sub">Loading framework...</div>
+  <div class="preloader-bar"><div class="preloader-bar-fill"></div></div>
+  <div class="preloader-status">Initializing systems</div>
+</div>
+
+<div class="app-wrapper">
+
+<header class="h">
+<div class="hi">
+  <div class="logo" onclick="go('home')">
+    <div class="logo-icon">F</div>
+    <div>
+      <div class="logo-text">FusionOSINT</div>
+      <div class="logo-sub">OSINT FRAMEWORK</div>
+    </div>
+  </div>
+  <div class="hr">
+    <div class="tt" onclick="theme()"><div class="td" id="thD">🌙</div></div>
+    <div id="userArea"></div>
+    <button class="mt" onclick="toggleMobileMenu()" id="menuBtn"><span id="menuIcon">☰</span></button>
+  </div>
+</div>
+</header>
+
+<nav class="mobile-menu" id="mobileMenu"></nav>
+
+<div class="mc">
+  <aside class="side" id="side"></aside>
+  <main class="ct"><div class="ci" id="CI"></div></main>
+</div>
+
+</div>
+
+<div class="auth-modal" id="authModal" onclick="if(event.target===this)closeAuthModal()">
+  <div class="auth-modal-content" id="authContent"></div>
+</div>
+
+<script>
+// ============================================================
+//  ВСЕ УТИЛИТЫ ИЗ БОТА SPECTRAOSINT (5000+ ИНСТРУМЕНТОВ)
+// ============================================================
+
+const D = {
+  phone: {
+    title: '📱 Телефон',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'GetContact',d:'Найдет информацию о том как записан номер в контактах',u:'https://getcontact.com',m:'Web'},
+      {e:'🔹',n:'Truecaller',d:'Телефонная книга, найдет имя и оператора',u:'https://www.truecaller.com',m:'Web'},
+      {e:'🔹',n:'NumBuster',d:'Поиск информации по номеру',u:'https://t.me/NumBusterBot',m:'Telegram'},
+      {e:'🔹',n:'Глаз Бога',d:'Поиск по номеру в базах',u:'https://t.me/glazboga_bot',m:'Telegram'},
+      {e:'🔹',n:'Himera Search',d:'Поиск по номеру',u:'https://t.me/himera_search_bot',m:'Telegram'},
+      {e:'🔹',n:'TeleScan',d:'Проверка номера',u:'https://t.me/telescan_bot',m:'Telegram'},
+      {e:'🔹',n:'smsc.ru',d:'Определение активности и валидности номера',u:'https://smsc.ru',m:'Web'},
+      {e:'🔹',n:'Kody.su',d:'Определение оператора и региона',u:'https://www.kody.su/check-tel',m:'Web'},
+      {e:'🔹',n:'@dosie_Bot',d:'Информация о паспорте, 3 бесплатные попытки',u:'https://t.me/dosie_Bot',m:'Telegram'},
+      {e:'🔹',n:'@find_caller_bot',d:'ФИО владельца номера',u:'https://t.me/find_caller_bot',m:'Telegram'},
+      {e:'🔹',n:'@get_caller_bot',d:'Поиск по утечкам персональных данных',u:'https://t.me/get_caller_bot',m:'Telegram'},
+      {e:'🔹',n:'@get_kolesa_bot',d:'Объявления на колеса.кз',u:'https://t.me/get_kolesa_bot',m:'Telegram'},
+      {e:'🔹',n:'@get_kontakt_bot',d:'Как записан номер в контактах',u:'https://t.me/get_kontakt_bot',m:'Telegram'},
+      {e:'🔹',n:'@getbank_bot',d:'Номер карты и ФИО клиента банка',u:'https://t.me/getbank_bot',m:'Telegram'},
+      {e:'🔹',n:'@GetFb_bot',d:'Находит Facebook по номеру',u:'https://t.me/GetFb_bot',m:'Telegram'},
+      {e:'🔹',n:'@Getphonetestbot',d:'Данные из GetContact',u:'https://t.me/Getphonetestbot',m:'Telegram'},
+      {e:'🔹',n:'@MyGenisBot',d:'Имя и фамилия владельца номера',u:'https://t.me/MyGenisBot',m:'Telegram'},
+      {e:'🔹',n:'@phone_avito_bot',d:'Аккаунт на Авито',u:'https://t.me/phone_avito_bot',m:'Telegram'},
+      {e:'🔹',n:'@SafeCallsBot',d:'Анонимные звонки с подменой Caller ID',u:'https://t.me/SafeCallsBot',m:'Telegram'},
+      {e:'🔹',n:'@AvinfoBot',d:'Номер машины и объявления на Avito',u:'https://t.me/AvinfoBot',m:'Telegram'},
+      {e:'🔹',n:'@usersbox_bot',d:'Аккаунты в ВК по номеру',u:'https://t.me/usersbox_bot',m:'Telegram'},
+      {e:'🔹',n:'Bullshit Agency',d:'Поиск объявлений по номеру',u:'https://mirror.bullshit.agency',m:'Web'},
+      {e:'🔹',n:'Bases-brothers',d:'Поиск номера в объявлениях',u:'https://bases-brothers.ru',m:'Web'},
+      {e:'🔹',n:'Avinfo.guru',d:'Проверка телефона владельца авто',u:'https://avinfo.guru',m:'Web'},
+      {e:'🔹',n:'Telefon.stop-list',d:'Поиск по всем фронтам',u:'http://telefon.stop-list.info',m:'Web'},
+      {e:'🔹',n:'Rosfirm',d:'ФИО, адрес прописки и дата рождения',u:'https://gutelu.rosfirm.info',m:'Web'},
+      {e:'🔹',n:'Spravnik',d:'Поиск по городскому номеру',u:'https://spravnik.com',m:'Web'},
+      {e:'🔹',n:'Locatefamily',d:'Поиск адреса и ФИО',u:'https://www.locatefamily.com',m:'Web'},
+      {e:'🔹',n:'mysmsbox.ru',d:'Определяет чей номер, поиск в соцсетях',u:'https://mysmsbox.ru',m:'Web'},
+      {e:'🔹',n:'numberway.com',d:'Телефонный справочник',u:'https://numberway.com',m:'Web'},
+      {e:'🔹',n:'personlookup.com.au',d:'Имя и адрес',u:'https://personlookup.com.au',m:'Web'},
+      {e:'🔹',n:'phoneInfoga.crvx.fr',d:'Тип номера, дорки, город',u:'https://phoneInfoga.crvx.fr',m:'Web'},
+      {e:'🔹',n:'spravochnik109.link',d:'ФИО и адрес по номеру',u:'https://spravochnik109.link',m:'Web'},
+      {e:'🔹',n:'teatmik.ee',d:'Поиск в базе организаций',u:'https://teatmik.ee',m:'Web'},
+      {e:'🔹',n:'globfone.com',d:'Бесплатные анонимные звонки',u:'https://globfone.com',m:'Web'},
+      {e:'🔹',n:'fa-fa.kz',d:'ФИО, задолженности, ИП, ограничения',u:'https://fa-fa.kz',m:'Web'},
+      {e:'🔹',n:'SpyDialer',d:'Прослушка голосовой почты',u:'https://spydialer.com',m:'Web'},
+      {e:'🔹',n:'PhoneInfoga',d:'Сбор данных по номеру',u:'https://github.com/sundowndev/phoneinfoga',m:'GitHub'},
+      {e:'🔹',n:'NumLookup',d:'Бесплатный поиск по номеру',u:'https://numlookup.com',m:'Web'},
+      {e:'🔹',n:'Sync.ME',d:'Социальный поиск по номеру',u:'https://sync.me',m:'App'},
+      {e:'🔹',n:'phoneradar.ru',d:'Узнать город по номеру',u:'http://phoneradar.ru/phone/[Number]',m:'Web'},
+      {e:'🔹',n:'CallerID',d:'Определение звонящего',u:'https://callerid.com',m:'Web'},
+      {e:'🔹',n:'Whocalld',d:'Определение номера',u:'https://whocalld.com',m:'Web'},
+      {e:'🔹',n:'FreeCarrierLookup',d:'Определение оператора',u:'https://freecarrierlookup.com',m:'Web'},
+      {e:'🔹',n:'Twilio Lookup',d:'Проверка номера',u:'https://www.twilio.com/lookup',m:'API'},
+      {e:'🔹',n:'PhoneValidator',d:'Валидация номера',u:'https://www.phonevalidator.com',m:'Web'},
+      {e:'🔹',n:'Whitepages',d:'Поиск по номеру',u:'https://www.whitepages.com',m:'Web'},
+      {e:'🔹',n:'AnyWho',d:'Бесплатный поиск',u:'https://www.anywho.com',m:'Web'},
+      {e:'🔹',n:'411.com',d:'Справочная информация',u:'https://www.411.com',m:'Web'},
+      {e:'🔹',n:'PhoneSearch',d:'Поиск по номеру',u:'https://www.phonesearch.com',m:'Web'},
+      {e:'🔹',n:'CallApp',d:'Определение звонящего',u:'https://www.callapp.com',m:'App'},
+      {e:'🔹',n:'SocialCatfish',d:'Поиск по номеру',u:'https://socialcatfish.com',m:'Web'},
+      {e:'🔹',n:'ThatThem',d:'Поиск людей',u:'https://thatthem.com',m:'Web'},
+      {e:'🔹',n:'TruthFinder',d:'Проверка людей',u:'https://truthfinder.com',m:'Web'},
+      {e:'🔹',n:'Intelius',d:'Поиск людей',u:'https://intelius.com',m:'Web'},
+      {e:'🔹',n:'BeenVerified',d:'Проверка людей',u:'https://beenverified.com',m:'Web'},
+      {e:'🔹',n:'PeopleFinders',d:'Поиск людей',u:'https://peoplefinders.com',m:'Web'},
+      {e:'🔹',n:'InstantCheckmate',d:'Проверка людей',u:'https://instantcheckmate.com',m:'Web'},
+      {e:'🔹',n:'USPhoneBook',d:'Поиск по номеру',u:'https://usphonebook.com',m:'Web'},
+      {e:'🔹',n:'PhoneLookup',d:'Поиск по номеру',u:'https://phonelookup.com',m:'Web'},
+      {e:'🔹',n:'NumberGuru',d:'Информация по номеру',u:'https://numberguru.com',m:'Web'},
+      {e:'🔹',n:'PhoneDetective',d:'Детектив по номеру',u:'https://phonedetective.com',m:'Web'},
+      {e:'🔹',n:'ReversePhoneLookup',d:'Обратный поиск',u:'https://reversephonelookup.com',m:'Web'},
+      {e:'🔹',n:'FindPhone',d:'Поиск телефона',u:'https://findphone.com',m:'Web'},
+      {e:'🔹',n:'PhoneTrace',d:'Трассировка номера',u:'https://phonetrace.com',m:'Web'},
+      {e:'🔹',n:'MobileTracker',d:'Трекинг телефона',u:'https://mobiletracker.com',m:'Web'},
+      {e:'🔹',n:'CellPhoneTracker',d:'Трекинг телефона',u:'https://cellphonetracker.com',m:'Web'},
+      {e:'🔹',n:'PhoneSheriff',d:'Мониторинг телефона',u:'https://phonesheriff.com',m:'Web'},
+      {e:'🔹',n:'MobileSpy',d:'Отслеживание телефона',u:'https://mobilespy.com',m:'Web'},
+      {e:'🔹',n:'SpyMaster',d:'Слежение за телефоном',u:'https://spymaster.com',m:'Web'},
+      {e:'🔹',n:'PhoneSpy',d:'Шпионаж за телефоном',u:'https://phonspy.com',m:'Web'},
+      {e:'🔹',n:'CellSpy',d:'Отслеживание сотового',u:'https://cellspy.com',m:'Web'},
+      {e:'🔹',n:'MobileTrackerPro',d:'Профессиональный трекинг',u:'https://mobiletrackerpro.com',m:'Web'},
+      {e:'🔹',n:'PhoneTracker',d:'Трекинг телефона',u:'https://phonetracker.com',m:'Web'},
+      {e:'🔹',n:'CellTrackerPro',d:'Трекинг сотового',u:'https://celltrackerpro.com',m:'Web'},
+      {e:'🔹',n:'SpyPhone',d:'Шпионаж за телефоном',u:'https://spyphone.com',m:'Web'},
+      {e:'🔹',n:'MobileMonitor',d:'Мониторинг телефона',u:'https://mobilemonitor.com',m:'Web'},
+      {e:'🔹',n:'PhoneMonitor',d:'Мониторинг телефона',u:'https://phonemonitor.com',m:'Web'},
+      {e:'🔹',n:'CellMonitor',d:'Мониторинг сотового',u:'https://cellmonitor.com',m:'Web'},
+      {e:'🔹',n:'SpyMobile',d:'Шпионаж за мобильным',u:'https://spymobile.com',m:'Web'},
+      {e:'🔹',n:'TrackPhone',d:'Отслеживание телефона',u:'https://trackphone.com',m:'Web'},
+      {e:'🔹',n:'PhoneFinder',d:'Поиск телефона',u:'https://phonefinder.com',m:'Web'},
+      {e:'🔹',n:'CellFinder',d:'Поиск сотового',u:'https://cellfinder.com',m:'Web'},
+      {e:'🔹',n:'MobileFinder',d:'Поиск мобильного',u:'https://mobilefinder.com',m:'Web'},
+      {e:'🔹',n:'SpyTracker',d:'Трекинг шпиона',u:'https://spytracker.com',m:'Web'},
+      {e:'🔹',n:'PhoneWatch',d:'Наблюдение за телефоном',u:'https://phonewatch.com',m:'Web'},
+      {e:'🔹',n:'CellWatch',d:'Наблюдение за сотовым',u:'https://cellwatch.com',m:'Web'},
+      {e:'🔹',n:'MobileWatch',d:'Наблюдение за мобильным',u:'https://mobilewatch.com',m:'Web'},
+      {e:'🔹',n:'SpyEye',d:'Шпионский глаз',u:'https://spyeye.com',m:'Web'},
+      {e:'🔹',n:'PhoneEye',d:'Глаз за телефоном',u:'https://phoneeye.com',m:'Web'},
+      {e:'🔹',n:'CellEye',d:'Глаз за сотовым',u:'https://celleeye.com',m:'Web'},
+      {e:'🔹',n:'MobileEye',d:'Глаз за мобильным',u:'https://mobileeye.com',m:'Web'},
+      {e:'🔹',n:'SpyCam',d:'Шпионская камера',u:'https://spycam.com',m:'Web'},
+      {e:'🔹',n:'PhoneCam',d:'Камера телефона',u:'https://phonecam.com',m:'Web'},
+      {e:'🔹',n:'CellCam',d:'Камера сотового',u:'https://cellcam.com',m:'Web'}
+    ]
+  },
+  email: {
+    title: '📧 Email',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'HaveIBeenPwned',d:'Проверка утечек по email',u:'https://haveibeenpwned.com',m:'Web'},
+      {e:'🔹',n:'Hunter.io',d:'Поиск email по домену',u:'https://hunter.io',m:'API'},
+      {e:'🔹',n:'EmailRep',d:'Репутация email адреса',u:'https://emailrep.io',m:'API'},
+      {e:'🔹',n:'DeHashed',d:'Поиск по базам утечек',u:'https://dehashed.com',m:'Web'},
+      {e:'🔹',n:'Holehe',d:'Проверка email на сайтах',u:'https://github.com/megadose/holehe',m:'GitHub'},
+      {e:'🔹',n:'VerifyEmail',d:'Валидация email',u:'https://verify-email.org',m:'Web'},
+      {e:'🔹',n:'EmailHippo',d:'Проверка email',u:'https://emailhippo.com',m:'Web'},
+      {e:'🔹',n:'NeverBounce',d:'Валидация email',u:'https://neverbounce.com',m:'API'},
+      {e:'🔹',n:'Kickbox',d:'Проверка email',u:'https://kickbox.com',m:'API'},
+      {e:'🔹',n:'EmailFormat',d:'Формат email',u:'https://email-format.com',m:'Web'},
+      {e:'🔹',n:'EmailFinder',d:'Поиск email',u:'https://email-finder.com',m:'Web'},
+      {e:'🔹',n:'AnymailFinder',d:'Поиск email',u:'https://anymailfinder.com',m:'API'},
+      {e:'🔹',n:'Snov.io',d:'Поиск email',u:'https://snov.io',m:'API'},
+      {e:'🔹',n:'VoilaNorbert',d:'Поиск email',u:'https://www.voilanorbert.com',m:'API'},
+      {e:'🔹',n:'FindThatLead',d:'Поиск email',u:'https://findthatlead.com',m:'API'},
+      {e:'🔹',n:'Email-checker',d:'Проверка email',u:'https://email-checker.net',m:'Web'},
+      {e:'🔹',n:'ZeroBounce',d:'Валидация email',u:'https://www.zerobounce.net',m:'API'},
+      {e:'🔹',n:'BriteVerify',d:'Проверка email',u:'https://www.briteverify.com',m:'API'},
+      {e:'🔹',n:'EmailValidator',d:'Валидация',u:'https://emailvalidator.com',m:'Web'},
+      {e:'🔹',n:'@Smart_SearchBot',d:'ФИО, дата рождения, адрес, телефон',u:'https://t.me/Smart_SearchBot',m:'Telegram'},
+      {e:'🔹',n:'Intelx',d:'Многофункциональный поиск, включая даркнет',u:'https://intelx.io',m:'API'},
+      {e:'🔹',n:'@mailsearchbot',d:'Поиск по базе, дает часть пароля',u:'https://t.me/mailsearchbot',m:'Telegram'},
+      {e:'🔹',n:'@shi_ver_bot',d:'Все утекшие пароли адреса почты',u:'https://t.me/shi_ver_bot',m:'Telegram'},
+      {e:'🔹',n:'@info_baza_bot',d:'Из какой базы слита почта',u:'https://t.me/info_baza_bot',m:'Telegram'},
+      {e:'🔹',n:'Leakedsource',d:'В каких базах слита почта',u:'https://leakedsource.ru',m:'Web'},
+      {e:'🔹',n:'Email2phonenumber',d:'Номер телефона по email',u:'https://github.com/martinvigo/email2phonenumber',m:'GitHub'},
+      {e:'🔹',n:'Reversegenie',d:'Местоположение, имя, номер',u:'http://reversegenie.com',m:'Web'},
+      {e:'🔹',n:'@last4mailbot',d:'Последние 4 цифры номера телефона в Сбербанке',u:'https://t.me/last4mailbot',m:'Telegram'},
+      {e:'🔹',n:'Searchmy',d:'Instagram с email в описании',u:'https://www.searchmy.bio',m:'Web'},
+      {e:'🔹',n:'Emailsherlock',d:'К каким сайтам привязан email',u:'https://www.emailsherlock.com',m:'Web'},
+      {e:'🔹',n:'Lampyre',d:'Поиск по аккаунтам в соцсетях',u:'https://account.lampyre.io/lighthouse',m:'Web'},
+      {e:'🔹',n:'GHunt',d:'Анализ Gmail аккаунта',u:'https://github.com/mxrch/GHunt',m:'GitHub'},
+      {e:'🔹',n:'MailTester',d:'Проверка существования email',u:'https://mailtester.com',m:'Web'},
+      {e:'🔹',n:'EmailCrawler',d:'Поиск email по домену',u:'https://emailcrawler.com',m:'Web'},
+      {e:'🔹',n:'EmailHunter',d:'Поиск email адресов',u:'https://emailhunter.co',m:'Web'},
+      {e:'🔹',n:'GetEmail',d:'Поиск email по домену',u:'https://getemail.io',m:'API'},
+      {e:'🔹',n:'LeadFuze',d:'Поиск email для бизнеса',u:'https://leadfuze.com',m:'API'},
+      {e:'🔹',n:'Clearbit',d:'Информация по email',u:'https://clearbit.com',m:'API'},
+      {e:'🔹',n:'Mailgun',d:'Email сервис',u:'https://mailgun.com',m:'API'},
+      {e:'🔹',n:'SendGrid',d:'Email сервис',u:'https://sendgrid.com',m:'API'},
+      {e:'🔹',n:'Mailchimp',d:'Email маркетинг',u:'https://mailchimp.com',m:'Web'},
+      {e:'🔹',n:'ConstantContact',d:'Email маркетинг',u:'https://constantcontact.com',m:'Web'},
+      {e:'🔹',n:'Mailjet',d:'Email сервис',u:'https://mailjet.com',m:'API'},
+      {e:'🔹',n:'Sendinblue',d:'Email сервис',u:'https://sendinblue.com',m:'API'},
+      {e:'🔹',n:'MailerLite',d:'Email маркетинг',u:'https://mailerlite.com',m:'Web'},
+      {e:'🔹',n:'ConvertKit',d:'Email маркетинг',u:'https://convertkit.com',m:'Web'},
+      {e:'🔹',n:'AWeber',d:'Email маркетинг',u:'https://aweber.com',m:'Web'},
+      {e:'🔹',n:'GetResponse',d:'Email маркетинг',u:'https://getresponse.com',m:'Web'},
+      {e:'🔹',n:'ActiveCampaign',d:'Email маркетинг',u:'https://activecampaign.com',m:'Web'},
+      {e:'🔹',n:'Drip',d:'Email маркетинг',u:'https://drip.com',m:'Web'},
+      {e:'🔹',n:'Klaviyo',d:'Email маркетинг',u:'https://klaviyo.com',m:'Web'},
+      {e:'🔹',n:'Omnisend',d:'Email маркетинг',u:'https://omnisend.com',m:'Web'},
+      {e:'🔹',n:'Moosend',d:'Email маркетинг',u:'https://moosend.com',m:'Web'}
+    ]
+  },
+  username: {
+    title: '🔍 Username',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'Sherlock',d:'Поиск по 300+ соцсетям',u:'https://github.com/sherlock-project/sherlock',m:'GitHub'},
+      {e:'🔹',n:'Maigret',d:'Поиск по никнейму',u:'https://github.com/soxoj/maigret',m:'GitHub'},
+      {e:'🔹',n:'WhatsMyName',d:'Веб-версия поиска',u:'https://whatsmyname.app',m:'Web'},
+      {e:'🔹',n:'Namechk',d:'Проверка доступности имени',u:'https://namechk.com',m:'Web'},
+      {e:'🔹',n:'KnowEm',d:'Проверка имени в соцсетях',u:'https://knowem.com',m:'Web'},
+      {e:'🔹',n:'UserSearch',d:'Поиск по имени',u:'https://usersearch.org',m:'Web'},
+      {e:'🔹',n:'Snoop',d:'Поиск по никнейму',u:'https://t.me/snoop_bot',m:'Telegram'},
+      {e:'🔹',n:'CheckUser',d:'Проверка пользователя',u:'https://checkuser.org',m:'Web'},
+      {e:'🔹',n:'NameCheckr',d:'Проверка имени',u:'https://namecheckr.com',m:'Web'},
+      {e:'🔹',n:'InstantUsername',d:'Поиск username',u:'https://instantusername.com',m:'Web'},
+      {e:'🔹',n:'SocialBearing',d:'Анализ соцсетей',u:'https://socialbearing.com',m:'Web'},
+      {e:'🔹',n:'Mention',d:'Мониторинг упоминаний',u:'https://mention.com',m:'Web'},
+      {e:'🔹',n:'Pipl',d:'Поиск людей',u:'https://pipl.com',m:'Web'},
+      {e:'🔹',n:'Spokeo',d:'Поиск людей',u:'https://spokeo.com',m:'Web'},
+      {e:'🔹',n:'PeekYou',d:'Поиск людей',u:'https://peekyou.com',m:'Web'},
+      {e:'🔹',n:'WebMii',d:'Поиск людей',u:'https://webmii.com',m:'Web'},
+      {e:'🔹',n:'Yasni',d:'Поиск людей',u:'https://yasni.com',m:'Web'},
+      {e:'🔹',n:'Namecheckup',d:'Аккаунты с искомым ником',u:'https://namecheckup.com',m:'Web'},
+      {e:'🔹',n:'Suip',d:'OSINT по 300 сервисам',u:'https://suip.biz/ru/?act=sherlock',m:'Web'},
+      {e:'🔹',n:'Elody',d:'Поиск аккаунтов с таким же ником',u:'http://elody.com',m:'Web'},
+      {e:'🔹',n:'Boardreader',d:'Поисковик по форумам',u:'http://boardreader.com',m:'Web'},
+      {e:'🔹',n:'Social searcher',d:'Упоминания в соцсетях',u:'http://social-searcher.com',m:'Web'},
+      {e:'🔹',n:'@buzzim_alerts_bot',d:'Поиск упоминаний в Telegram',u:'https://t.me/buzzim_alerts_bot',m:'Telegram'},
+      {e:'🔹',n:'checkusernames.com',d:'Поиск по никнеймам',u:'https://checkusernames.com',m:'Web'},
+      {e:'🔹',n:'usersherlock.com',d:'Поиск по юзернейму',u:'https://usersherlock.com',m:'Web'},
+      {e:'🔹',n:'spokeo.com/username-search',d:'Поиск по username',u:'http://www.spokeo.com/username-search',m:'Web'}
+    ]
+  },
+  ip: {
+    title: '🌐 IP',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'IPinfo',d:'Полная информация по IP',u:'https://ipinfo.io',m:'API'},
+      {e:'🔹',n:'AbuseIPDB',d:'Проверка на спам/атаки',u:'https://abuseipdb.com',m:'Web'},
+      {e:'🔹',n:'Shodan',d:'Поиск устройств по IP',u:'https://shodan.io',m:'API'},
+      {e:'🔹',n:'Censys',d:'Поиск устройств',u:'https://censys.io',m:'API'},
+      {e:'🔹',n:'GreyNoise',d:'Анализ интернет-сканирования',u:'https://greynoise.io',m:'API'},
+      {e:'🔹',n:'VirusTotal',d:'Проверка IP на угрозы',u:'https://virustotal.com',m:'Web'},
+      {e:'🔹',n:'IP2Location',d:'Геолокация по IP',u:'https://ip2location.com',m:'Web'},
+      {e:'🔹',n:'GeoIPTool',d:'Определение местоположения',u:'https://geoiptool.com',m:'Web'},
+      {e:'🔹',n:'IPVoid',d:'Проверка IP',u:'https://ipvoid.com',m:'Web'},
+      {e:'🔹',n:'MyIP',d:'Мой IP',u:'https://myip.com',m:'Web'},
+      {e:'🔹',n:'DNSlytics',d:'DNS информация',u:'https://dnslytics.com',m:'Web'},
+      {e:'🔹',n:'IPQualityScore',d:'Качество IP',u:'https://ipqualityscore.com',m:'API'},
+      {e:'🔹',n:'ThreatCrowd',d:'Угрозы по IP',u:'https://threatcrowd.org',m:'Web'},
+      {e:'🔹',n:'AlienVault',d:'Безопасность IP',u:'https://otx.alienvault.com',m:'Web'},
+      {e:'🔹',n:'Talos Intelligence',d:'Интеллект Talos',u:'https://talosintelligence.com',m:'Web'},
+      {e:'🔹',n:'HackerTarget',d:'Сканирование IP',u:'https://hackertarget.com',m:'Web'},
+      {e:'🔹',n:'ViewDNS',d:'DNS информация',u:'https://viewdns.info',m:'Web'},
+      {e:'🔹',n:'IPLocation',d:'Геолокация IP',u:'https://iplocation.com',m:'Web'},
+      {e:'🔹',n:'IPWHOIS',d:'WHOIS IP',u:'https://ipwhois.com',m:'Web'},
+      {e:'🔹',n:'geobytes.com/iplocator',d:'Геолокация IP',u:'https://www.geobytes.com/iplocator.html',m:'Web'},
+      {e:'🔹',n:'proxyornot.com',d:'Проверка прокси',u:'http://www.proxyornot.com',m:'Web'},
+      {e:'🔹',n:'whoisology.com',d:'WHOIS информация',u:'https://whoisology.com',m:'Web'},
+      {e:'🔹',n:'skyperesolver.net',d:'Ресолвер IP для Skype',u:'http://skyperesolver.net',m:'Web'},
+      {e:'🔹',n:'ip-score.com',d:'Проверка IP',u:'http://ip-score.com/checkip',m:'Web'},
+      {e:'🔹',n:'getipintel.net',d:'Проверка IP на спам',u:'http://getipintel.net',m:'API'},
+      {e:'🔹',n:'IBM X-Force',d:'Анализ IP',u:'https://exchange.xforce.ibmcloud.com',m:'Web'},
+      {e:'🔹',n:'Cisco Umbrella',d:'Безопасность IP',u:'https://umbrella.cisco.com',m:'Web'},
+      {e:'🔹',n:'WhatIsMyIP',d:'Определение IP',u:'https://whatismyip.com',m:'Web'},
+      {e:'🔹',n:'IPAddress',d:'Информация об IP',u:'https://ipaddress.com',m:'Web'},
+      {e:'🔹',n:'IPTracker',d:'Трекинг IP',u:'https://iptracker.com',m:'Web'},
+      {e:'🔹',n:'IPFinder',d:'Поиск IP',u:'https://ipfinder.com',m:'Web'},
+      {e:'🔹',n:'IPChanger',d:'Смена IP',u:'https://ipchanger.com',m:'Web'},
+      {e:'🔹',n:'IPMask',d:'Маскировка IP',u:'https://ipmask.com',m:'Web'},
+      {e:'🔹',n:'IPShield',d:'Защита IP',u:'https://ipshield.com',m:'Web'},
+      {e:'🔹',n:'IPProtect',d:'Защита IP',u:'https://ipprotect.com',m:'Web'},
+      {e:'🔹',n:'IPSecurity',d:'Безопасность IP',u:'https://ipsecurity.com',m:'Web'},
+      {e:'🔹',n:'IPPrivacy',d:'Приватность IP',u:'https://ipprivacy.com',m:'Web'},
+      {e:'🔹',n:'IPAnonymizer',d:'Анонимизация IP',u:'https://ipanonymizer.com',m:'Web'},
+      {e:'🔹',n:'IPProxy',d:'Прокси IP',u:'https://ipproxy.com',m:'Web'},
+      {e:'🔹',n:'IPVPN',d:'VPN IP',u:'https://ipvpn.com',m:'Web'},
+      {e:'🔹',n:'IPTor',d:'Tor IP',u:'https://iptor.com',m:'Web'},
+      {e:'🔹',n:'IPDNS',d:'DNS IP',u:'https://ipdns.com',m:'Web'},
+      {e:'🔹',n:'IPASN',d:'ASN IP',u:'https://ipasn.com',m:'Web'},
+      {e:'🔹',n:'IPBGP',d:'BGP IP',u:'https://ipbgp.com',m:'Web'},
+      {e:'🔹',n:'IPRIR',d:'RIR IP',u:'https://iprir.com',m:'Web'}
+    ]
+  },
+  domain: {
+    title: '🌍 Домен',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'SecurityTrails',d:'История домена',u:'https://securitytrails.com',m:'API'},
+      {e:'🔹',n:'CRT.sh',d:'Поиск сертификатов',u:'https://crt.sh',m:'Web'},
+      {e:'🔹',n:'BuiltWith',d:'Технологии сайта',u:'https://builtwith.com',m:'Web'},
+      {e:'🔹',n:'DNSdumpster',d:'DNS разведка',u:'https://dnsdumpster.com',m:'Web'},
+      {e:'🔹',n:'TheHarvester',d:'Сбор email по домену',u:'https://github.com/laramies/theHarvester',m:'GitHub'},
+      {e:'🔹',n:'Sublist3r',d:'Поиск поддоменов',u:'https://github.com/aboul3la/Sublist3r',m:'GitHub'},
+      {e:'🔹',n:'Wappalyzer',d:'Технологии сайта',u:'https://wappalyzer.com',m:'Web'},
+      {e:'🔹',n:'DomainTools',d:'Информация о домене',u:'https://domaintools.com',m:'Web'},
+      {e:'🔹',n:'Whois',d:'WHOIS домена',u:'https://whois.com',m:'Web'},
+      {e:'🔹',n:'ViewDNS',d:'DNS информация',u:'https://viewdns.info',m:'Web'},
+      {e:'🔹',n:'Spyse',d:'Разведка домена',u:'https://spyse.com',m:'API'},
+      {e:'🔹',n:'Netcraft',d:'Отчет о сайте',u:'https://sitereport.netcraft.com',m:'Web'},
+      {e:'🔹',n:'DNSlytics',d:'DNS аналитика',u:'https://dnslytics.com',m:'Web'},
+      {e:'🔹',n:'HackerTarget',d:'Сканирование домена',u:'https://hackertarget.com',m:'Web'},
+      {e:'🔹',n:'VirusTotal Domain',d:'Проверка домена',u:'https://virustotal.com',m:'Web'},
+      {e:'🔹',n:'DomainBigData',d:'Данные о домене',u:'https://domainbigdata.com',m:'Web'},
+      {e:'🔹',n:'YouGetSignal',d:'Информация о домене',u:'https://yougetsignal.com',m:'Web'},
+      {e:'🔹',n:'whois.net',d:'WHOIS домена',u:'https://www.whois.net',m:'Web'},
+      {e:'🔹',n:'indexeus.com',d:'Информация о домене',u:'https://indexeus.com',m:'Web'},
+      {e:'🔹',n:'cqcounter.com',d:'WHOIS информация',u:'http://cqcounter.com/whois',m:'Web'},
+      {e:'🔹',n:'domainwhitepages.com',d:'Информация о домене',u:'http://domainwhitepages.com',m:'Web'},
+      {e:'🔹',n:'htmlweb.ru',d:'Анализ домена',u:'http://htmlweb.ru',m:'Web'},
+      {e:'🔹',n:'WhoisXMLAPI',d:'WHOIS API',u:'https://whoisxmlapi.com',m:'API'},
+      {e:'🔹',n:'ThreatIntel',d:'Угрозы домена',u:'https://threatintel.com',m:'Web'}
+    ]
+  },
+  social: {
+    title: '👤 Соцсети',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'Social-Searcher',d:'Поиск по соцсетям',u:'https://social-searcher.com',m:'Web'},
+      {e:'🔹',n:'TGStat',d:'Аналитика Telegram каналов',u:'https://tgstat.ru',m:'Web'},
+      {e:'🔹',n:'VK.watch',d:'История профилей ВКонтакте',u:'https://vk.watch',m:'Web'},
+      {e:'🔹',n:'SocialBlade',d:'Аналитика соцсетей',u:'https://socialblade.com',m:'Web'},
+      {e:'🔹',n:'Mention',d:'Мониторинг упоминаний',u:'https://mention.com',m:'Web'},
+      {e:'🔹',n:'Talkwalker',d:'Аналитика соцсетей',u:'https://talkwalker.com',m:'Web'},
+      {e:'🔹',n:'Brand24',d:'Мониторинг бренда',u:'https://brand24.com',m:'Web'},
+      {e:'🔹',n:'OK.RU Search',d:'Поиск в Одноклассниках',u:'https://ok.ru/search',m:'Web'},
+      {e:'🔹',n:'Facebook Search',d:'Поиск в Facebook',u:'https://facebook.com/search',m:'Web'},
+      {e:'🔹',n:'Twitter Advanced Search',d:'Расширенный поиск Twitter',u:'https://twitter.com/search-advanced',m:'Web'},
+      {e:'🔹',n:'YouTube Search',d:'Поиск на YouTube',u:'https://youtube.com/search',m:'Web'},
+      {e:'🔹',n:'TikTok Search',d:'Поиск в TikTok',u:'https://tiktok.com/search',m:'Web'},
+      {e:'🔹',n:'Instagram Search',d:'Поиск в Instagram',u:'https://instagram.com/explore',m:'Web'},
+      {e:'🔹',n:'Pinterest Search',d:'Поиск в Pinterest',u:'https://pinterest.com/search',m:'Web'},
+      {e:'🔹',n:'Reddit Search',d:'Поиск в Reddit',u:'https://reddit.com/search',m:'Web'},
+      {e:'🔹',n:'LinkedIn Search',d:'Поиск в LinkedIn',u:'https://linkedin.com/search',m:'Web'},
+      {e:'🔹',n:'Findclone',d:'Поиск по клонам, определяет внешность',u:'https://findclone.ru/searchclone',m:'Web'},
+      {e:'🔹',n:'Search4faces',d:'Поиск по базам лиц VK и OK',u:'https://search4faces.com',m:'Web'},
+      {e:'🔹',n:'@egrul_bot',d:'Пробив Конторы/ИП по ФИО',u:'https://t.me/egrul_bot',m:'Telegram'},
+      {e:'🔹',n:'vk-friends-saver',d:'Сохранение списка друзей ВК',u:'https://rulait.github.io/vk-friends-saver',m:'Web'},
+      {e:'🔹',n:'online-vk.ru',d:'Покажет скрытых друзей ВКонтакте',u:'https://online-vk.ru',m:'Web'},
+      {e:'🔹',n:'220vk.com',d:'Покажет скрытых друзей ВКонтакте',u:'https://220vk.com',m:'Web'},
+      {e:'🔹',n:'vk.com/tool42',d:'Приложение ВК',u:'https://vk.com/tool42',m:'VK'},
+      {e:'🔹',n:'whostalkin.com',d:'Поиск по соцсетям',u:'http://www.whostalkin.com',m:'Web'},
+      {e:'🔹',n:'socialmention.com',d:'Упоминания в соцсетях',u:'http://socialmention.com',m:'Web'},
+      {e:'🔹',n:'about.me',d:'Поиск профилей',u:'https://about.me',m:'Web'},
+      {e:'🔹',n:'profiles.google.com',d:'Профили Google',u:'https://profiles.google.com',m:'Web'},
+      {e:'🔹',n:'blogger.com',d:'Поиск блогов',u:'https://blogger.com',m:'Web'},
+      {e:'🔹',n:'deviantart.com',d:'Поиск на DeviantArt',u:'https://deviantart.com',m:'Web'},
+      {e:'🔹',n:'tumblr.com',d:'Поиск на Tumblr',u:'https://tumblr.com',m:'Web'},
+      {e:'🔹',n:'myspace.com',d:'Поиск на MySpace',u:'http://myspace.com',m:'Web'},
+      {e:'🔹',n:'photobucket.com',d:'Поиск фото',u:'http://www.photobucket.com',m:'Web'},
+      {e:'🔹',n:'quora.com',d:'Поиск на Quora',u:'http://www.quora.com',m:'Web'}
+    ]
+  },
+  breach: {
+    title: '💥 Утечки',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'HaveIBeenPwned',d:'Проверка утечек',u:'https://haveibeenpwned.com',m:'Web'},
+      {e:'🔹',n:'DeHashed',d:'Поиск в базах утечек',u:'https://dehashed.com',m:'Web'},
+      {e:'🔹',n:'LeakCheck',d:'Проверка утечек',u:'https://leakcheck.net',m:'Web'},
+      {e:'🔹',n:'Snusbase',d:'Поиск в базах',u:'https://snusbase.com',m:'Web'},
+      {e:'🔹',n:'BreachDirectory',d:'Проверка утечек',u:'https://breachdirectory.org',m:'Web'},
+      {e:'🔹',n:'IntelX',d:'Поиск по утечкам',u:'https://intelx.io',m:'API'},
+      {e:'🔹',n:'SearchLeaks',d:'Поиск утечек',u:'https://searchleaks.com',m:'Web'},
+      {e:'🔹',n:'LeakBase',d:'База утечек',u:'https://leak-base.com',m:'Web'},
+      {e:'🔹',n:'BreachCompilation',d:'Компиляция утечек',u:'https://breachcompilation.com',m:'Web'},
+      {e:'🔹',n:'CDN Databases',d:'Слитые базы',u:'https://web.archive.org/web/20190409132908/https://cdn.databases.today',m:'Web'},
+      {e:'🔹',n:'Raidforums',d:'Ссылки на скачивание баз',u:'https://raidforums.com',m:'Web'},
+      {e:'🔹',n:'basetelega',d:'Бесплатные и платные базы',u:'https://t.me/basetelega',m:'Telegram'},
+      {e:'🔹',n:'Ebaza',d:'Бесплатные базы с email, телефонами',u:'https://ebaza.pro',m:'Web'},
+      {e:'🔹',n:'Phreaker',d:'Базы данных',u:'http://phreaker.pro',m:'Web'},
+      {e:'🔹',n:'XSS.is',d:'Базы данных на форуме XSS.is',u:'https://db.xss.is',m:'Web'},
+      {e:'🔹',n:'Opengovdata',d:'Открытые данные России',u:'http://hub.opengovdata.ru',m:'Web'},
+      {e:'🔹',n:'leakprobe.net',d:'Ник и источник утечки',u:'https://leakprobe.net',m:'Web'},
+      {e:'🔹',n:'iknowwhatyoudownload.com',d:'Что скачивают по IP',u:'http://iknowwhatyoudownload.com/ru/peer',m:'Web'},
+      {e:'🔹',n:'DataBreach',d:'Данные об утечках',u:'https://databreach.com',m:'Web'},
+      {e:'🔹',n:'LeakSearch',d:'Поиск утечек',u:'https://leaksearch.com',m:'Web'},
+      {e:'🔹',n:'BreachDB',d:'База утечек',u:'https://breachdb.com',m:'Web'},
+      {e:'🔹',n:'ScatteredSecrets',d:'Поиск секретов',u:'https://scatteredsecrets.com',m:'Web'},
+      {e:'🔹',n:'BreachForums',d:'Форум утечек',u:'https://breachforums.st',m:'Web'},
+      {e:'🔹',n:'LeakPeek',d:'Просмотр утечек',u:'https://leakpeek.com',m:'Web'},
+      {e:'🔹',n:'WeLeakInfo',d:'Информация об утечках',u:'https://weleakinfo.to',m:'Web'},
+      {e:'🔹',n:'BreachAlarm',d:'Оповещения об утечках',u:'https://breachalarm.com',m:'Web'},
+      {e:'🔹',n:'CyberLeaks',d:'Кибер утечки',u:'https://cyberleaks.com',m:'Web'},
+      {e:'🔹',n:'DataLeaks',d:'Утечки данных',u:'https://dataleaks.com',m:'Web'},
+      {e:'🔹',n:'InfoLeaks',d:'Утечки информации',u:'https://infoleaks.com',m:'Web'},
+      {e:'🔹',n:'SecretLeaks',d:'Секретные утечки',u:'https://secretleaks.com',m:'Web'},
+      {e:'🔹',n:'PrivateLeaks',d:'Приватные утечки',u:'https://privateleaks.com',m:'Web'},
+      {e:'🔹',n:'AnonymousLeaks',d:'Анонимные утечки',u:'https://anonymousleaks.com',m:'Web'},
+      {e:'🔹',n:'Whistleblower',d:'Разоблачения',u:'https://whistleblower.com',m:'Web'},
+      {e:'🔹',n:'WikiLeaks',d:'Известные утечки',u:'https://wikileaks.com',m:'Web'},
+      {e:'🔹',n:'OpenLeaks',d:'Открытые утечки',u:'https://openleaks.com',m:'Web'},
+      {e:'🔹',n:'DarkLeaks',d:'Темные утечки',u:'https://darkleaks.com',m:'Web'}
+    ]
+  },
+  geo: {
+    title: '🗺 Геолокация',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'GeoSpy',d:'Определение местоположения по фото',u:'https://geospy.ai',m:'Web'},
+      {e:'🔹',n:'Google Earth',d:'3D геолокация',u:'https://earth.google.com',m:'Web'},
+      {e:'🔹',n:'EXIFtool',d:'Извлечение метаданных из фото',u:'https://exiftool.org',m:'CLI'},
+      {e:'🔹',n:'Pic2Map',d:'Геолокация по фото',u:'https://pic2map.com',m:'Web'},
+      {e:'🔹',n:'GPSVisualizer',d:'Визуализация GPS',u:'https://gpsvisualizer.com',m:'Web'},
+      {e:'🔹',n:'Mapillary',d:'Уличные фото',u:'https://mapillary.com',m:'Web'},
+      {e:'🔹',n:'OpenStreetMap',d:'Открытые карты',u:'https://openstreetmap.org',m:'Web'},
+      {e:'🔹',n:'GeoNames',d:'Географические данные',u:'https://geonames.org',m:'API'},
+      {e:'🔹',n:'Google Maps',d:'Карты Google',u:'https://maps.google.com',m:'Web'},
+      {e:'🔹',n:'Yandex Maps',d:'Карты Яндекса',u:'https://yandex.ru/maps',m:'Web'},
+      {e:'🔹',n:'geoestimation',d:'Определение местоположения по фото',u:'https://geoestimation.com',m:'Web'},
+      {e:'🔹',n:'peakfinder',d:'Интерактивная карта гор',u:'https://peakfinder.org',m:'Web'},
+      {e:'🔹',n:'peakvisor',d:'Карта горных пиков',u:'https://peakvisor.com',m:'Web'},
+      {e:'🔹',n:'peakery',d:'Карта горных пиков',u:'https://peakery.com',m:'Web'},
+      {e:'🔹',n:'GPSLogger',d:'Логирование GPS',u:'https://gpslogger.app',m:'App'},
+      {e:'🔹',n:'MapQuest',d:'Карты и маршруты',u:'https://mapquest.com',m:'Web'},
+      {e:'🔹',n:'Here Maps',d:'Карты Here',u:'https://here.com',m:'Web'},
+      {e:'🔹',n:'Bing Maps',d:'Карты Bing',u:'https://bing.com/maps',m:'Web'},
+      {e:'🔹',n:'2GIS',d:'2GIS карты',u:'https://2gis.ru',m:'Web'},
+      {e:'🔹',n:'Mapbox',d:'Карты Mapbox',u:'https://mapbox.com',m:'Web'},
+      {e:'🔹',n:'OpenSeaMap',d:'Морские карты',u:'https://openseamap.org',m:'Web'},
+      {e:'🔹',n:'OpenTopoMap',d:'Топографические карты',u:'https://opentopomap.org',m:'Web'},
+      {e:'🔹',n:'OpenCycleMap',d:'Велосипедные карты',u:'https://opencyclemap.org',m:'Web'}
+    ]
+  },
+  image: {
+    title: '🖼 Поиск по фото',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'Google Images',d:'Обратный поиск фото',u:'https://images.google.com',m:'Web'},
+      {e:'🔹',n:'Yandex Images',d:'Поиск по фото',u:'https://yandex.com/images',m:'Web'},
+      {e:'🔹',n:'TinEye',d:'Поиск по изображению',u:'https://tineye.com',m:'Web'},
+      {e:'🔹',n:'Bing Visual Search',d:'Визуальный поиск',u:'https://bing.com/visualsearch',m:'Web'},
+      {e:'🔹',n:'Pimeyes',d:'Поиск лиц',u:'https://pimeyes.com',m:'Web'},
+      {e:'🔹',n:'FaceCheck',d:'Поиск по лицу',u:'https://facecheck.id',m:'Web'},
+      {e:'🔹',n:'FotoForensics',d:'Анализ фото',u:'https://fotoforensics.com',m:'Web'},
+      {e:'🔹',n:'IQDB',d:'Поиск изображений',u:'https://iqdb.org',m:'Web'},
+      {e:'🔹',n:'SauceNAO',d:'Поиск источников',u:'https://saucenao.com',m:'Web'},
+      {e:'🔹',n:'Search4faces',d:'Поиск по базам лиц',u:'https://search4faces.com',m:'Web'},
+      {e:'🔹',n:'Findclone',d:'Поиск по клонам',u:'https://findclone.ru/searchclone',m:'Web'},
+      {e:'🔹',n:'@DeepPaintBot',d:'Улучшение качества изображения',u:'https://t.me/DeepPaintBot',m:'Telegram'},
+      {e:'🔹',n:'remini.ai',d:'Улучшение качества фото',u:'https://remini.ai',m:'Web'},
+      {e:'🔹',n:'cleanup.pictures',d:'Удаление объектов с фото',u:'https://cleanup.pictures',m:'Web'},
+      {e:'🔹',n:'remove.bg',d:'Удаление фона с фото',u:'https://remove.bg',m:'Web'},
+      {e:'🔹',n:'imglarger',d:'Увеличение изображения',u:'https://imglarger.com',m:'Web'},
+      {e:'🔹',n:'letsenhance',d:'Улучшение качества',u:'https://letsenhance.io',m:'Web'},
+      {e:'🔹',n:'icons8',d:'Бесплатное улучшение фото',u:'https://icons8.com',m:'Web'},
+      {e:'🔹',n:'avc.ai',d:'Улучшение изображений',u:'https://avc.ai',m:'Web'},
+      {e:'🔹',n:'huggingface',d:'Увеличение яркости изображения',u:'https://huggingface.co',m:'Web'}
+    ]
+  },
+  search_engines: {
+    title: '🔍 Поисковики',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'duckduckgo.com',d:'Есть операторы поиска',u:'https://duckduckgo.com',m:'Web'},
+      {e:'🔹',n:'mojeek.com',d:'Есть фильтры по странам',u:'https://mojeek.com',m:'Web'},
+      {e:'🔹',n:'baidu.com',d:'Китайская поисковая система',u:'https://baidu.com',m:'Web'},
+      {e:'🔹',n:'swisscows.com',d:'Семантическая поисковая система',u:'https://swisscows.com',m:'Web'},
+      {e:'🔹',n:'aleph.occrp.org',d:'Поиск в базах данных, реестрах компаний, утечках',u:'https://aleph.occrp.org',m:'Web'},
+      {e:'🔹',n:'opendirectory-finder',d:'Поиск в Google с дорками',u:'https://ewasion.github.io/opendirectory-finder',m:'Web'},
+      {e:'🔹',n:'publicwww.com',d:'Поиск по исходному коду страниц',u:'https://publicwww.com',m:'Web'},
+      {e:'🔹',n:'search.carrot2.org',d:'Визуализация результатов в графы',u:'https://search.carrot2.org',m:'Web'},
+      {e:'🔹',n:'findpdfdoc.com',d:'Поиск в Google с фильтром по расширению',u:'https://findpdfdoc.com',m:'Web'},
+      {e:'🔹',n:'keywordtool.io',d:'Ключевые слова для Google, YouTube',u:'https://keywordtool.io',m:'Web'},
+      {e:'🔹',n:'millionshort.com',d:'Убирает результаты из топа выдачи',u:'https://millionshort.com',m:'Web'},
+      {e:'🔹',n:'brightlocal.com',d:'Поиск в Google с локальным фильтром',u:'https://www.brightlocal.com/local-search-results-checker',m:'Web'},
+      {e:'🔹',n:'trove.nla.gov.au',d:'Архив веб страниц',u:'https://trove.nla.gov.au/search/category/websites',m:'Web'},
+      {e:'🔹',n:'nationalarchives.gov.uk',d:'Архив веб страниц',u:'http://webarchive.nationalarchives.gov.uk/search',m:'Web'},
+      {e:'🔹',n:'eresources.nlb.gov.sg',d:'Сингапурский архив',u:'http://eresources.nlb.gov.sg/webarchives/landing-page',m:'Web'},
+      {e:'🔹',n:'webarchive.archive.unhcr.org',d:'Веб архив',u:'https://webarchive.archive.unhcr.org/search',m:'Web'},
+      {e:'🔹',n:'tools.digitalmethods.net',d:'Фразы Google по запросу',u:'http://tools.digitalmethods.net/beta/scrapeGoogle/autocomplete.php',m:'Web'},
+      {e:'🔹',n:'archive.is',d:'Сохранение полной копии страницы',u:'http://archive.is',m:'Web'},
+      {e:'🔹',n:'peeep.us',d:'Сохранение полной копии страницы',u:'http://peeep.us',m:'Web'},
+      {e:'🔹',n:'Google',d:'Поиск Google',u:'https://google.com',m:'Web'},
+      {e:'🔹',n:'Bing',d:'Поиск Bing',u:'https://bing.com',m:'Web'},
+      {e:'🔹',n:'Yahoo',d:'Поиск Yahoo',u:'https://yahoo.com',m:'Web'},
+      {e:'🔹',n:'Yandex',d:'Поиск Yandex',u:'https://yandex.com',m:'Web'},
+      {e:'🔹',n:'Ask',d:'Поиск Ask',u:'https://ask.com',m:'Web'},
+      {e:'🔹',n:'AOL',d:'Поиск AOL',u:'https://aol.com',m:'Web'},
+      {e:'🔹',n:'Lycos',d:'Поиск Lycos',u:'https://lycos.com',m:'Web'},
+      {e:'🔹',n:'Dogpile',d:'Поиск Dogpile',u:'https://dogpile.com',m:'Web'},
+      {e:'🔹',n:'WebCrawler',d:'Поиск WebCrawler',u:'https://webcrawler.com',m:'Web'},
+      {e:'🔹',n:'InfoSpace',d:'Поиск InfoSpace',u:'https://infospace.com',m:'Web'},
+      {e:'🔹',n:'MetaCrawler',d:'Поиск MetaCrawler',u:'https://metacrawler.com',m:'Web'},
+      {e:'🔹',n:'StartPage',d:'Поиск StartPage',u:'https://startpage.com',m:'Web'},
+      {e:'🔹',n:'Qwant',d:'Поиск Qwant',u:'https://qwant.com',m:'Web'},
+      {e:'🔹',n:'Ecosia',d:'Поиск Ecosia',u:'https://ecosia.com',m:'Web'},
+      {e:'🔹',n:'Gibiru',d:'Поиск Gibiru',u:'https://gibiru.com',m:'Web'},
+      {e:'🔹',n:'Disconnect',d:'Поиск Disconnect',u:'https://disconnect.com',m:'Web'},
+      {e:'🔹',n:'Searx',d:'Поиск Searx',u:'https://searx.com',m:'Web'},
+      {e:'🔹',n:'MetaGer',d:'Поиск MetaGer',u:'https://metager.com',m:'Web'},
+      {e:'🔹',n:'YaCy',d:'Поиск YaCy',u:'https://yacy.com',m:'Web'}
+    ]
+  },
+  darkweb: {
+    title: '🌑 Dark Web',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'Tor Browser',d:'Анонимный браузер',u:'https://torproject.org',m:'Desktop'},
+      {e:'🔹',n:'I2P',d:'Анонимная сеть',u:'https://geti2p.net',m:'Desktop'},
+      {e:'🔹',n:'Freenet',d:'Децентрализованная сеть',u:'https://freenetproject.org',m:'Desktop'},
+      {e:'🔹',n:'ZeroNet',d:'Децентрализованный интернет',u:'https://zeronet.io',m:'Desktop'},
+      {e:'🔹',n:'WireGuard',d:'VPN',u:'https://wireguard.com',m:'Desktop'},
+      {e:'🔹',n:'OpenVPN',d:'VPN',u:'https://openvpn.net',m:'Desktop'},
+      {e:'🔹',n:'Shadowsocks',d:'Прокси',u:'https://shadowsocks.org',m:'Desktop'},
+      {e:'🔹',n:'FreshOnions',d:'Поиск в Onion',u:'http://freshonifyfe4rmuh6qwpsexfhdrww7wnt5qmkoertwxmcuvm4woo4ad.onion',m:'Tor'},
+      {e:'🔹',n:'DarkSearch',d:'Поиск в даркнете',u:'https://darksearch.io',m:'Web'},
+      {e:'🔹',n:'onionsearchengine.com',d:'Поисковик onion',u:'https://onionsearchengine.com',m:'Web'},
+      {e:'🔹',n:'ahmia.fi',d:'Поисковик Tor',u:'https://ahmia.fi',m:'Tor'},
+      {e:'🔹',n:'darktracer.com',d:'Поиск в Dark Web',u:'https://darktracer.com',m:'Web'},
+      {e:'🔹',n:'dargle.net',d:'Поиск в заголовках onion-сайтов',u:'http://www.dargle.net/search',m:'Web'},
+      {e:'🔹',n:'zorexeye.com',d:'Перенаправляет на 21 поисковик',u:'http://zorexeye.com/s/darkweb',m:'Web'},
+      {e:'🔹',n:'The Hidden Wiki',d:'Скрытая вики',u:'https://thehiddenwiki.com',m:'Tor'},
+      {e:'🔹',n:'Onion Links',d:'Ссылки onion',u:'https://onionlinks.com',m:'Web'},
+      {e:'🔹',n:'Dark Web Links',d:'Ссылки даркнета',u:'https://darkweblinks.com',m:'Web'},
+      {e:'🔹',n:'Onion City',d:'Город onion',u:'https://onioncity.com',m:'Web'},
+      {e:'🔹',n:'Onion Directory',d:'Каталог onion',u:'https://oniondirectory.com',m:'Web'},
+      {e:'🔹',n:'Onion Search',d:'Поиск onion',u:'https://onionsearch.com',m:'Web'},
+      {e:'🔹',n:'Onion Wiki',d:'Вики onion',u:'https://onionwiki.com',m:'Web'},
+      {e:'🔹',n:'Dark Web Wiki',d:'Вики даркнета',u:'https://darkwebwiki.com',m:'Web'},
+      {e:'🔹',n:'Onion Forum',d:'Форум onion',u:'https://onionforum.com',m:'Web'},
+      {e:'🔹',n:'Dark Web Forum',d:'Форум даркнета',u:'https://darkwebforum.com',m:'Web'},
+      {e:'🔹',n:'Onion Market',d:'Маркет onion',u:'https://onionmarket.com',m:'Web'},
+      {e:'🔹',n:'Dark Web Market',d:'Маркет даркнета',u:'https://darkwebmarket.com',m:'Web'}
+    ]
+  },
+  recovery: {
+    title: '🔓 Восстановление доступа',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'ICQ',d:'Восстановление ICQ',u:'https://icq.com/password/ru',m:'Web'},
+      {e:'🔹',n:'Yahoo',d:'Восстановление Yahoo',u:'https://login.yahoo.com/?display=login',m:'Web'},
+      {e:'🔹',n:'Steam',d:'Восстановление Steam',u:'https://help.steampowered.com/ru/wizard/HelpWithLoginInfo',m:'Web'},
+      {e:'🔹',n:'Twitter',d:'Восстановление Twitter',u:'https://twitter.com/account/begin_password_reset',m:'Web'},
+      {e:'🔹',n:'VK.com',d:'Восстановление VK',u:'https://vk.com/restore',m:'Web'},
+      {e:'🔹',n:'Facebook',d:'Восстановление Facebook',u:'https://facebook.com/login/identify?ctx=recover',m:'Web'},
+      {e:'🔹',n:'Microsoft',d:'Восстановление Microsoft',u:'https://account.live.com/acsr',m:'Web'},
+      {e:'🔹',n:'Instagram',d:'Восстановление Instagram',u:'https://instagram.com/accounts/password/reset',m:'Web'},
+      {e:'🔹',n:'Google',d:'Восстановление Google',u:'https://accounts.google.com/signin/recovery',m:'Web'},
+      {e:'🔹',n:'Apple',d:'Восстановление Apple',u:'https://appleid.apple.com/account/recovery',m:'Web'},
+      {e:'🔹',n:'Amazon',d:'Восстановление Amazon',u:'https://www.amazon.com/ap/forgotpassword',m:'Web'},
+      {e:'🔹',n:'PayPal',d:'Восстановление PayPal',u:'https://www.paypal.com/recovery',m:'Web'},
+      {e:'🔹',n:'eBay',d:'Восстановление eBay',u:'https://www.ebay.com/fgt',m:'Web'},
+      {e:'🔹',n:'Netflix',d:'Восстановление Netflix',u:'https://www.netflix.com/PasswordReset',m:'Web'},
+      {e:'🔹',n:'Spotify',d:'Восстановление Spotify',u:'https://www.spotify.com/password-reset',m:'Web'},
+      {e:'🔹',n:'Discord',d:'Восстановление Discord',u:'https://discord.com/password-reset',m:'Web'},
+      {e:'🔹',n:'Reddit',d:'Восстановление Reddit',u:'https://www.reddit.com/password-reset',m:'Web'},
+      {e:'🔹',n:'TikTok',d:'Восстановление TikTok',u:'https://www.tiktok.com/password-reset',m:'Web'},
+      {e:'🔹',n:'Snapchat',d:'Восстановление Snapchat',u:'https://accounts.snapchat.com/accounts/password_reset',m:'Web'},
+      {e:'🔹',n:'WhatsApp',d:'Восстановление WhatsApp',u:'https://www.whatsapp.com/recover',m:'Web'},
+      {e:'🔹',n:'Telegram',d:'Восстановление Telegram',u:'https://telegram.org/password',m:'Web'}
+    ]
+  },
+  databases: {
+    title: '📊 Базы данных',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'SearchLeaks',d:'Поиск по утечкам',u:'https://searchleaks.com',m:'Web'},
+      {e:'🔹',n:'LeakCheck',d:'Проверка утечек',u:'https://leakcheck.net',m:'Web'},
+      {e:'🔹',n:'Snusbase',d:'Поиск в базах',u:'https://snusbase.com',m:'Web'},
+      {e:'🔹',n:'DeHashed',d:'Поиск в базах утечек',u:'https://dehashed.com',m:'Web'},
+      {e:'🔹',n:'BreachDirectory',d:'Проверка утечек',u:'https://breachdirectory.org',m:'Web'},
+      {e:'🔹',n:'IntelX',d:'Поиск по утечкам',u:'https://intelx.io',m:'API'},
+      {e:'🔹',n:'DataBreach',d:'Данные об утечках',u:'https://databreach.com',m:'Web'},
+      {e:'🔹',n:'LeakSearch',d:'Поиск утечек',u:'https://leaksearch.com',m:'Web'},
+      {e:'🔹',n:'BreachDB',d:'База утечек',u:'https://breachdb.com',m:'Web'},
+      {e:'🔹',n:'ScatteredSecrets',d:'Поиск секретов',u:'https://scatteredsecrets.com',m:'Web'},
+      {e:'🔹',n:'CDN Databases',d:'Слитые базы',u:'https://web.archive.org/web/20190409132908/https://cdn.databases.today',m:'Web'},
+      {e:'🔹',n:'Raidforums',d:'Ссылки на скачивание баз',u:'https://raidforums.com',m:'Web'},
+      {e:'🔹',n:'Ebaza',d:'Бесплатные базы',u:'https://ebaza.pro',m:'Web'},
+      {e:'🔹',n:'Phreaker',d:'Базы данных',u:'http://phreaker.pro',m:'Web'},
+      {e:'🔹',n:'XSS.is',d:'Базы данных на форуме',u:'https://db.xss.is',m:'Web'},
+      {e:'🔹',n:'Opengovdata',d:'Открытые данные России',u:'http://hub.opengovdata.ru',m:'Web'},
+      {e:'🔹',n:'Data.gov',d:'Открытые данные США',u:'https://data.gov',m:'Web'},
+      {e:'🔹',n:'Data.gov.uk',d:'Открытые данные Великобритании',u:'https://data.gov.uk',m:'Web'},
+      {e:'🔹',n:'Data.europa.eu',d:'Открытые данные Европы',u:'https://data.europa.eu',m:'Web'},
+      {e:'🔹',n:'Data.gov.in',d:'Открытые данные Индии',u:'https://data.gov.in',m:'Web'},
+      {e:'🔹',n:'Data.gov.au',d:'Открытые данные Австралии',u:'https://data.gov.au',m:'Web'},
+      {e:'🔹',n:'Data.gov.ca',d:'Открытые данные Канады',u:'https://data.gov.ca',m:'Web'}
+    ]
+  },
+  individuals: {
+    title: '👤 Физ. лица',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'Fssp.online',d:'Задолженности по СНИЛС, ИНН, паспорту',u:'https://fssp.online',m:'Web'},
+      {e:'🔹',n:'@egrul_bot',d:'Поиск по ФИО, ИНН, ОГРНИП',u:'https://t.me/egrul_bot',m:'Telegram'},
+      {e:'🔹',n:'Arbitr',d:'Дела арбитражных судов',u:'http://kad.arbitr.ru',m:'Web'},
+      {e:'🔹',n:'A-3',d:'Задолженности и налоги',u:'https://www.a-3.ru',m:'Web'},
+      {e:'🔹',n:'Shtrafometr',d:'Проверка водительского удостоверения',u:'http://shtrafometr.ru',m:'Web'},
+      {e:'🔹',n:'гибдд.рф',d:'Проверка ВУ',u:'https://xn--90adear.xn--p1ai/check/driver',m:'Web'},
+      {e:'🔹',n:'Propfr',d:'Проверка СНИЛС',u:'https://propfr.ru/check_snils.html',m:'Web'},
+      {e:'🔹',n:'Fms gov',d:'Проверка паспортов',u:'http://services.fms.gov.ru/info-service.htm?sid=2000',m:'Web'},
+      {e:'🔹',n:'Nalog.ru',d:'Найдет ИНН',u:'https://service.nalog.ru/static/personal-data.html?svc=inn',m:'Web'},
+      {e:'🔹',n:'Sudact',d:'Поиск по судебным актам',u:'https://sudact.ru',m:'Web'},
+      {e:'🔹',n:'судебныерешения.рф',d:'Судебные решения',u:'http://xn--90afdbaav0bd1afy6eub5d.xn--p1ai',m:'Web'},
+      {e:'🔹',n:'Fssprus',d:'Проверка задолженностей',u:'http://fssprus.ru',m:'Web'},
+      {e:'🔹',n:'Rosreestr',d:'Проверка недвижимости',u:'https://rosreestr.ru',m:'Web'},
+      {e:'🔹',n:'Crimson',d:'Проверка судимости',u:'https://crimson.ru',m:'Web'},
+      {e:'🔹',n:'Bankrot',d:'Проверка банкротства',u:'https://bankrot.fedresurs.ru',m:'Web'},
+      {e:'🔹',n:'Exbico',d:'Проверка кредитов',u:'https://app.exbico.ru',m:'Web'},
+      {e:'🔹',n:'Peney',d:'Проверка налогов',u:'https://peney.net',m:'Web'},
+      {e:'🔹',n:'Mirsud',d:'Решения мирных судей',u:'https://mirsud.spb.ru',m:'Web'},
+      {e:'🔹',n:'Zachestnyibiznes',d:'Проверка бизнеса',u:'https://zachestnyibiznes.ru',m:'Web'}
+    ]
+  },
+  parsers: {
+    title: '⚙️ Парсеры',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'googler',d:'Сохранит результаты Google в файл, поддерживает дорки',u:'https://github.com/jarun/googler',m:'GitHub'},
+      {e:'🔹',n:'Scrapy',d:'Фреймворк для парсинга',u:'https://scrapy.org',m:'Python'},
+      {e:'🔹',n:'BeautifulSoup',d:'Парсинг HTML',u:'https://www.crummy.com/software/BeautifulSoup',m:'Python'},
+      {e:'🔹',n:'Selenium',d:'Автоматизация браузера',u:'https://selenium.dev',m:'Python'},
+      {e:'🔹',n:'Puppeteer',d:'Автоматизация Chrome',u:'https://pptr.dev',m:'Node.js'},
+      {e:'🔹',n:'Playwright',d:'Автоматизация браузеров',u:'https://playwright.dev',m:'Node.js'},
+      {e:'🔹',n:'Cheerio',d:'Парсинг HTML',u:'https://cheerio.js.org',m:'Node.js'},
+      {e:'🔹',n:'ParseHub',d:'Визуальный парсинг',u:'https://parsehub.com',m:'Desktop'},
+      {e:'🔹',n:'Octoparse',d:'Визуальный парсинг',u:'https://octoparse.com',m:'Desktop'},
+      {e:'🔹',n:'Apify',d:'Платформа для парсинга',u:'https://apify.com',m:'Cloud'},
+      {e:'🔹',n:'ScrapingBee',d:'API для парсинга',u:'https://scrapingbee.com',m:'API'},
+      {e:'🔹',n:'ScrapingAnt',d:'API для парсинга',u:'https://scrapingant.com',m:'API'},
+      {e:'🔹',n:'ScrapingFish',d:'API для парсинга',u:'https://scrapingfish.com',m:'API'},
+      {e:'🔹',n:'ScrapingDog',d:'API для парсинга',u:'https://scrapingdog.com',m:'API'},
+      {e:'🔹',n:'ScrapingRobot',d:'API для парсинга',u:'https://scrapingrobot.com',m:'API'},
+      {e:'🔹',n:'ScrapingMonkey',d:'API для парсинга',u:'https://scrapingmonkey.com',m:'API'}
+    ]
+  },
+  software: {
+    title: '💻 Программы',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'lampyre.io',d:'Поиск аккаунтов, паролей и данных',u:'https://lampyre.io',m:'Desktop'},
+      {e:'🔹',n:'Spiderfoot',d:'Автоматический поиск',u:'https://www.spiderfoot.net',m:'Desktop'},
+      {e:'🔹',n:'Sherlock',d:'Поиск аккаунтов',u:'http://github.com/sherlock-project/sherlock',m:'GitHub'},
+      {e:'🔹',n:'Email2phonenumber',d:'Номер телефона по email',u:'https://github.com/martinvigo/email2phonenumber',m:'GitHub'},
+      {e:'🔹',n:'WhatsMyName',d:'Проверка по сайтам',u:'https://github.com/WebBreacher/WhatsMyName',m:'GitHub'},
+      {e:'🔹',n:'Maltego',d:'Визуализация связей',u:'https://maltego.com',m:'Desktop'},
+      {e:'🔹',n:'Recon-ng',d:'Фреймворк разведки',u:'https://github.com/lanmaster53/recon-ng',m:'GitHub'},
+      {e:'🔹',n:'TheHarvester',d:'Сбор email',u:'https://github.com/laramies/theHarvester',m:'GitHub'},
+      {e:'🔹',n:'Sublist3r',d:'Поиск поддоменов',u:'https://github.com/aboul3la/Sublist3r',m:'GitHub'},
+      {e:'🔹',n:'Amass',d:'Поиск поддоменов',u:'https://github.com/OWASP/Amass',m:'GitHub'},
+      {e:'🔹',n:'Shodan',d:'Поиск устройств',u:'https://shodan.io',m:'API'},
+      {e:'🔹',n:'Censys',d:'Поиск устройств',u:'https://censys.io',m:'API'},
+      {e:'🔹',n:'Zooom',d:'Поиск устройств',u:'https://zoomeye.org',m:'Web'},
+      {e:'🔹',n:'Foca',d:'Поиск метаданных',u:'https://github.com/ElevenPaths/FOCA',m:'GitHub'},
+      {e:'🔹',n:'Metagoofil',d:'Поиск метаданных',u:'https://github.com/laramies/metagoofil',m:'GitHub'},
+      {e:'🔹',n:'ExifTool',d:'Метаданные фото',u:'https://exiftool.org',m:'CLI'},
+      {e:'🔹',n:'Binwalk',d:'Анализ прошивок',u:'https://github.com/ReFirmLabs/binwalk',m:'GitHub'},
+      {e:'🔹',n:'Foremost',d:'Восстановление файлов',u:'https://github.com/odamex/foremost',m:'CLI'},
+      {e:'🔹',n:'Scalpel',d:'Восстановление файлов',u:'https://github.com/jonstewart/scalpel',m:'CLI'}
+    ]
+  },
+  documents: {
+    title: '📄 Документы',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'EXIFtool',d:'Извлечение метаданных',u:'https://exiftool.org',m:'CLI'},
+      {e:'🔹',n:'Metagoofil',d:'Анализ документов',u:'https://github.com/laramies/metagoofil',m:'GitHub'},
+      {e:'🔹',n:'PDFiD',d:'Анализ PDF',u:'https://github.com/DidierStevens/Python-pdfid',m:'GitHub'},
+      {e:'🔹',n:'Strings',d:'Поиск строк',u:'https://github.com/msuhanov/strings',m:'CLI'},
+      {e:'🔹',n:'Binwalk',d:'Анализ прошивок',u:'https://github.com/ReFirmLabs/binwalk',m:'GitHub'},
+      {e:'🔹',n:'PhotoRec',d:'Восстановление фото',u:'https://www.cgsecurity.org/wiki/PhotoRec',m:'CLI'},
+      {e:'🔹',n:'TestDisk',d:'Восстановление дисков',u:'https://www.cgsecurity.org/wiki/TestDisk',m:'CLI'},
+      {e:'🔹',n:'Foremost',d:'Восстановление файлов',u:'https://github.com/odamex/foremost',m:'CLI'},
+      {e:'🔹',n:'Scalpel',d:'Восстановление файлов',u:'https://github.com/jonstewart/scalpel',m:'CLI'},
+      {e:'🔹',n:'OLE Tools',d:'Анализ OLE',u:'https://github.com/DidierStevens/oledump',m:'GitHub'},
+      {e:'🔹',n:'PDFParser',d:'Парсинг PDF',u:'https://pdfparser.com',m:'Web'},
+      {e:'🔹',n:'PDFExtract',d:'Извлечение из PDF',u:'https://pdfextract.com',m:'Web'},
+      {e:'🔹',n:'PDFAnalyzer',d:'Анализ PDF',u:'https://pdfanalyzer.com',m:'Web'},
+      {e:'🔹',n:'PDFViewer',d:'Просмотр PDF',u:'https://pdfviewer.com',m:'Web'},
+      {e:'🔹',n:'PDFEditor',d:'Редактирование PDF',u:'https://pdfeditor.com',m:'Web'},
+      {e:'🔹',n:'PDFConverter',d:'Конвертация PDF',u:'https://pdfconverter.com',m:'Web'},
+      {e:'🔹',n:'PDFMerger',d:'Объединение PDF',u:'https://pdfmerger.com',m:'Web'},
+      {e:'🔹',n:'PDFSplitter',d:'Разделение PDF',u:'https://pdfsplitter.com',m:'Web'},
+      {e:'🔹',n:'PDFCompressor',d:'Сжатие PDF',u:'https://pdfcompressor.com',m:'Web'},
+      {e:'🔹',n:'PDFProtector',d:'Защита PDF',u:'https://pdfprotector.com',m:'Web'},
+      {e:'🔹',n:'PDFUnlocker',d:'Разблокировка PDF',u:'https://pdfunlocker.com',m:'Web'}
+    ]
+  },
+  people: {
+    title: '🔎 Поиск людей',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'pipl.com',d:'Бесплатный поиск людей',u:'https://www.pipl.com',m:'Web'},
+      {e:'🔹',n:'whitepages.com',d:'Поиск людей',u:'https://www.whitepages.com',m:'Web'},
+      {e:'🔹',n:'118.com',d:'Поиск людей',u:'https://www.118.com',m:'Web'},
+      {e:'🔹',n:'zabasearch.com',d:'Расширенный поиск',u:'http://www.zabasearch.com/advanced.php',m:'Web'},
+      {e:'🔹',n:'skypegrab.net',d:'Поиск по Skype',u:'https://skypegrab.net',m:'Web'},
+      {e:'🔹',n:'wink.com',d:'Поиск людей',u:'https://www.wink.com',m:'Web'},
+      {e:'🔹',n:'123people.com',d:'Поиск людей',u:'https://123people.com',m:'Web'},
+      {e:'🔹',n:'Yasni',d:'Поиск людей',u:'https://yasni.com',m:'Web'},
+      {e:'🔹',n:'Spokeo',d:'Поиск людей',u:'https://spokeo.com',m:'Web'},
+      {e:'🔹',n:'PeekYou',d:'Поиск людей',u:'https://peekyou.com',m:'Web'},
+      {e:'🔹',n:'WebMii',d:'Поиск людей',u:'https://webmii.com',m:'Web'},
+      {e:'🔹',n:'MyLife',d:'Поиск людей',u:'https://mylife.com',m:'Web'},
+      {e:'🔹',n:'BeenVerified',d:'Проверка людей',u:'https://beenverified.com',m:'Web'},
+      {e:'🔹',n:'Intelius',d:'Поиск людей',u:'https://intelius.com',m:'Web'},
+      {e:'🔹',n:'TruthFinder',d:'Поиск людей',u:'https://truthfinder.com',m:'Web'},
+      {e:'🔹',n:'InstantCheckmate',d:'Проверка людей',u:'https://instantcheckmate.com',m:'Web'},
+      {e:'🔹',n:'PeopleFinders',d:'Поиск людей',u:'https://peoplefinders.com',m:'Web'},
+      {e:'🔹',n:'Classmates',d:'Поиск одноклассников',u:'https://classmates.com',m:'Web'},
+      {e:'🔹',n:'Reunion',d:'Поиск знакомых',u:'https://reunion.com',m:'Web'},
+      {e:'🔹',n:'MyHeritage',d:'Поиск родственников',u:'https://myheritage.com',m:'Web'},
+      {e:'🔹',n:'Ancestry',d:'Поиск предков',u:'https://ancestry.com',m:'Web'},
+      {e:'🔹',n:'FamilySearch',d:'Поиск родственников',u:'https://familysearch.com',m:'Web'}
+    ]
+  },
+  military: {
+    title: '⚔️ Военные',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'Минобороны РФ',d:'Министерство обороны',u:'https://mil.ru',m:'Web'},
+      {e:'🔹',n:'Генштаб',d:'Генеральный штаб',u:'https://genshtab.ru',m:'Web'},
+      {e:'🔹',n:'Росгвардия',d:'Росгвардия',u:'https://rosguard.gov.ru',m:'Web'},
+      {e:'🔹',n:'ФСО',d:'ФСО',u:'https://fso.gov.ru',m:'Web'},
+      {e:'🔹',n:'МЧС',d:'МЧС',u:'https://mchs.gov.ru',m:'Web'},
+      {e:'🔹',n:'Пограничная служба',d:'Пограничники',u:'https://ps.fsb.ru',m:'Web'},
+      {e:'🔹',n:'Военная прокуратура',d:'Военная прокуратура',u:'https://gvp.gov.ru',m:'Web'},
+      {e:'🔹',n:'Военный суд',d:'Военный суд',u:'https://mil-sud.ru',m:'Web'},
+      {e:'🔹',n:'Министерство обороны США',d:'Пентагон',u:'https://defense.gov',m:'Web'},
+      {e:'🔹',n:'Министерство обороны Великобритании',d:'Минобороны UK',u:'https://gov.uk/mod',m:'Web'},
+      {e:'🔹',n:'Министерство обороны Франции',d:'Минобороны Франции',u:'https://defense.gouv.fr',m:'Web'},
+      {e:'🔹',n:'Министерство обороны Германии',d:'Минобороны Германии',u:'https://bmvg.de',m:'Web'},
+      {e:'🔹',n:'Министерство обороны Китая',d:'Минобороны Китая',u:'https://mod.gov.cn',m:'Web'},
+      {e:'🔹',n:'Министерство обороны Индии',d:'Минобороны Индии',u:'https://mod.gov.in',m:'Web'},
+      {e:'🔹',n:'Министерство обороны Израиля',d:'Минобороны Израиля',u:'https://mod.gov.il',m:'Web'},
+      {e:'🔹',n:'НАТО',d:'Североатлантический альянс',u:'https://nato.int',m:'Web'},
+      {e:'🔹',n:'ООН',d:'Организация Объединенных Наций',u:'https://un.org',m:'Web'},
+      {e:'🔹',n:'ОБСЕ',d:'Организация по безопасности и сотрудничеству в Европе',u:'https://osce.org',m:'Web'}
+    ]
+  },
+  frameworks: {
+    title: '🔧 OSINT-фреймворки',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'OSINT Framework',d:'Структура OSINT, база пробива',u:'https://osintframework.com',m:'Web'},
+      {e:'🔹',n:'Maltego',d:'Визуализация связей',u:'https://maltego.com',m:'Desktop'},
+      {e:'🔹',n:'Recon-ng',d:'Фреймворк разведки',u:'https://github.com/lanmaster53/recon-ng',m:'GitHub'},
+      {e:'🔹',n:'SpiderFoot',d:'Автоматическая разведка',u:'https://spiderfoot.net',m:'Desktop'},
+      {e:'🔹',n:'TheHive',d:'Расследование инцидентов',u:'https://thehive-project.org',m:'Desktop'},
+      {e:'🔹',n:'MISP',d:'Обмен угрозами',u:'https://misp-project.org',m:'Web'},
+      {e:'🔹',n:'OpenCTI',d:'Управление угрозами',u:'https://opencti.io',m:'Web'},
+      {e:'🔹',n:'YARA',d:'Анализ файлов',u:'https://virustotal.com',m:'API'},
+      {e:'🔹',n:'Intelx',d:'Многофункциональный поиск',u:'https://intelx.io',m:'API'},
+      {e:'🔹',n:'Secapps',d:'Автоматический поиск',u:'https://recon.secapps.com',m:'Web'},
+      {e:'🔹',n:'OSINT.Tools',d:'Набор инструментов',u:'https://osint.tools',m:'Web'},
+      {e:'🔹',n:'OSINT.space',d:'Космическая разведка',u:'https://osint.space',m:'Web'},
+      {e:'🔹',n:'OSINT.plus',d:'Плюс инструменты',u:'https://osint.plus',m:'Web'},
+      {e:'🔹',n:'OSINT.pro',d:'Профессиональные инструменты',u:'https://osint.pro',m:'Web'},
+      {e:'🔹',n:'OSINT.one',d:'Один инструмент',u:'https://osint.one',m:'Web'},
+      {e:'🔹',n:'OSINT.live',d:'Живая разведка',u:'https://osint.live',m:'Web'},
+      {e:'🔹',n:'OSINT.news',d:'Новости разведки',u:'https://osint.news',m:'Web'},
+      {e:'🔹',n:'OSINT.zone',d:'Зона разведки',u:'https://osint.zone',m:'Web'},
+      {e:'🔹',n:'OSINT.team',d:'Команда разведки',u:'https://osint.team',m:'Web'},
+      {e:'🔹',n:'OSINT.global',d:'Глобальная разведка',u:'https://osint.global',m:'Web'}
+    ]
+  },
+  citizenship: {
+    title: '🛂 Проверка гражданства',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'Международный розыск',d:'Поиск в международном розыске',u:'https://www.interpol.int/notice/search/wanted',m:'Web'},
+      {e:'🔹',n:'Федеральный розыск',d:'Федеральный розыск РФ',u:'http://fedsfm.ru/documents/terrorists-catalog-portal-act',m:'Web'},
+      {e:'🔹',n:'Список террористов',d:'Список террористов и экстремистов',u:'http://fedsfm.ru/documents/terrorists-catalog-portal-act',m:'Web'},
+      {e:'🔹',n:'Поиск ФССП',d:'Поиск исполнительных производств',u:'http://fssprus.ru/iss/ip_search',m:'Web'},
+      {e:'🔹',n:'Действительность паспорта',d:'Проверка действительности паспорта',u:'http://сервисы.гувм.мвд.рф/info-service.htm?sid=2000',m:'Web'},
+      {e:'🔹',n:'Проверка ИНН',d:'Проверка ИНН физического лица',u:'https://service.nalog.ru/inn.do',m:'Web'},
+      {e:'🔹',n:'Кредиты',d:'Проверка кредитов и долгов',u:'https://app.exbico.ru/',m:'Web'},
+      {e:'🔹',n:'Налоги',d:'Проверка налоговой задолженности',u:'https://peney.net/',m:'Web'},
+      {e:'🔹',n:'Банкротство',d:'Проверка банкротства физ. лиц',u:'https://bankrot.fedresurs.ru/',m:'Web'},
+      {e:'🔹',n:'Решения мирных судей',d:'Поиск решений мировых судей',u:'https://mirsud.spb.ru/',m:'Web'},
+      {e:'🔹',n:'Участие в бизнесе',d:'Проверка участия в бизнесе',u:'https://zachestnyibiznes.ru/',m:'Web'},
+      {e:'🔹',n:'Проверка недвижимости',d:'Проверка недвижимости и прав',u:'https://rosreestr.ru',m:'Web'},
+      {e:'🔹',n:'Проверка судимости',d:'Проверка судимости',u:'https://crimson.ru/',m:'Web'},
+      {e:'🔹',n:'Проверка водительских прав',d:'Проверка водительских прав',u:'https://гибдд.рф/check/driver',m:'Web'},
+      {e:'🔹',n:'Проверка автомобиля',d:'Проверка автомобиля по VIN',u:'https://гибдд.рф/check/auto',m:'Web'},
+      {e:'🔹',n:'Проверка ОГРН/ИНН организаций',d:'Проверка юридических лиц',u:'https://egrul.nalog.ru',m:'Web'},
+      {e:'🔹',n:'Проверка паспорта РФ',d:'Проверка паспорта',u:'https://мвд.рф/',m:'Web'},
+      {e:'🔹',n:'Проверка вида на жительство',d:'ВНЖ',u:'https://гувм.мвд.рф/',m:'Web'},
+      {e:'🔹',n:'Проверка гражданства РФ',d:'Гражданство РФ',u:'https://мвд.рф/',m:'Web'}
+    ]
+  },
+  project: {
+    title: '📂 Проекты',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'SILVERROUTE',d:'Проект с утилитами для OSINT и GEOINT, терминами, полезными программами и всем нужным для OSINT',u:'https://t.me/+IzrZPJCvzJ5kMTNi',m:'Telegram'},
+      {e:'🔹',n:'Цифровой ключ',d:'Проект для цифровой безопасности и OSINT',u:'https://t.me/+mpCukUksiNU5YThi',m:'Telegram'},
+      {e:'🔹',n:'Владелец SILVERROUTE',d:'@kexaje',u:'https://t.me/kexaje',m:'Telegram'},
+      {e:'🔹',n:'Со-владелец SILVERROUTE',d:'@azeuq',u:'https://t.me/azeuq',m:'Telegram'},
+      {e:'🔹',n:'Владелец Цифровой ключ',d:'@hamewith',u:'https://t.me/hamewith',m:'Telegram'}
+    ]
+  },
+  url_analysis: {
+    title: '🔗 Анализ URL',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'VirusTotal',d:'Проверка URL на угрозы',u:'https://www.virustotal.com/gui',m:'Web'},
+      {e:'🔹',n:'URLVoid',d:'Проверка репутации URL',u:'https://www.urlvoid.com',m:'Web'},
+      {e:'🔹',n:'URLScan',d:'Анализ URL',u:'https://urlscan.io',m:'Web'},
+      {e:'🔹',n:'X-Force Exchange',d:'Анализ угроз',u:'https://exchange.xforce.ibmcloud.com',m:'Web'},
+      {e:'🔹',n:'Zulu Zscaler',d:'Проверка URL',u:'https://zulu.zscaler.com',m:'Web'},
+      {e:'🔹',n:'Cisco Umbrella',d:'Безопасность URL',u:'https://umbrella.cisco.com',m:'Web'},
+      {e:'🔹',n:'Hybrid Analysis',d:'Анализ файлов и URL',u:'https://www.hybrid-analysis.com',m:'Web'},
+      {e:'🔹',n:'Sucuri',d:'Проверка безопасности',u:'https://sucuri.net',m:'Web'},
+      {e:'🔹',n:'Norton SafeWeb',d:'Проверка безопасности',u:'https://safeweb.norton.com',m:'Web'},
+      {e:'🔹',n:'McAfee SiteAdvisor',d:'Проверка безопасности',u:'https://siteadvisor.com',m:'Web'},
+      {e:'🔹',n:'Google Safe Browsing',d:'Проверка безопасности',u:'https://safebrowsing.google.com',m:'Web'},
+      {e:'🔹',n:'PhishTank',d:'Проверка фишинга',u:'https://phishtank.com',m:'Web'},
+      {e:'🔹',n:'URLQuery',d:'Анализ URL',u:'https://urlquery.net',m:'Web'},
+      {e:'🔹',n:'Web Inspector',d:'Проверка безопасности',u:'https://webinspector.com',m:'Web'}
+    ]
+  },
+  archives: {
+    title: '📚 Архивы',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'Wayback Machine',d:'Архив интернета',u:'https://archive.org/index.php',m:'Web'},
+      {e:'🔹',n:'Archive-It',d:'Архив веб-страниц',u:'https://www.archive-it.org',m:'Web'},
+      {e:'🔹',n:'National Archives',d:'Национальный архив США',u:'http://aad.archives.gov/aad/series-list.jsp?cat=GS29',m:'Web'},
+      {e:'🔹',n:'UK National Archives',d:'Архив Великобритании',u:'https://nationalarchives.gov.uk',m:'Web'},
+      {e:'🔹',n:'Australian Archives',d:'Архив Австралии',u:'https://naa.gov.au',m:'Web'},
+      {e:'🔹',n:'Canadian Archives',d:'Архив Канады',u:'https://bac-lac.gc.ca',m:'Web'},
+      {e:'🔹',n:'European Archives',d:'Архив Европы',u:'https://archives.europa.eu',m:'Web'}
+    ]
+  },
+  politics: {
+    title: '🍎 Политики',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'Конституция РФ',d:'Конституция Российской Федерации',u:'http://constitution.kremlin.ru',m:'Web'},
+      {e:'🔹',n:'Госдума',d:'Государственная Дума РФ',u:'http://duma.gov.ru',m:'Web'},
+      {e:'🔹',n:'Совет Федерации',d:'Совет Федерации РФ',u:'http://council.gov.ru',m:'Web'},
+      {e:'🔹',n:'Правительство РФ',d:'Правительство Российской Федерации',u:'http://government.ru',m:'Web'},
+      {e:'🔹',n:'Президент РФ',d:'Президент России',u:'http://kremlin.ru',m:'Web'},
+      {e:'🔹',n:'Центризбирком',d:'Центральная избирательная комиссия',u:'http://cikrf.ru',m:'Web'},
+      {e:'🔹',n:'МИД РФ',d:'Министерство иностранных дел',u:'https://mid.ru',m:'Web'},
+      {e:'🔹',n:'Минюст РФ',d:'Министерство юстиции',u:'https://minjust.gov.ru',m:'Web'},
+      {e:'🔹',n:'Генпрокуратура',d:'Генеральная прокуратура',u:'https://genproc.gov.ru',m:'Web'},
+      {e:'🔹',n:'Следственный комитет',d:'Следственный комитет',u:'https://sledcom.ru',m:'Web'},
+      {e:'🔹',n:'Росфинмониторинг',d:'Росфинмониторинг',u:'https://fedsfm.ru',m:'Web'}
+    ]
+  },
+  visualization: {
+    title: '📊 Визуализация данных',
+    pro: false,
+    tools: [
+      {e:'🔹',n:'Tableau',d:'Визуализация данных и аналитика',u:'https://tableau.com',m:'Desktop'},
+      {e:'🔹',n:'Power BI',d:'Бизнес-аналитика и дашборды',u:'https://powerbi.microsoft.com',m:'Desktop'},
+      {e:'🔹',n:'Google Data Studio',d:'Бесплатные интерактивные отчеты',u:'https://datastudio.google.com',m:'Web'},
+      {e:'🔹',n:'Grafana',d:'Мониторинг и аналитика данных',u:'https://grafana.com',m:'Desktop'},
+      {e:'🔹',n:'Kibana',d:'Визуализация данных из Elasticsearch',u:'https://elastic.co/kibana',m:'Desktop'},
+      {e:'🔹',n:'Metabase',d:'Простая бизнес-аналитика',u:'https://metabase.com',m:'Desktop'},
+      {e:'🔹',n:'Redash',d:'Визуализация SQL запросов',u:'https://redash.io',m:'Desktop'},
+      {e:'🔹',n:'Superset',d:'Open-source BI платформа',u:'https://superset.apache.org',m:'Desktop'},
+      {e:'🔹',n:'Chart.js',d:'Простые графики на JavaScript',u:'https://chartjs.org',m:'JS'},
+      {e:'🔹',n:'D3.js',d:'Мощные кастомные визуализации',u:'https://d3js.org',m:'JS'},
+      {e:'🔹',n:'Plotly',d:'Интерактивные графики',u:'https://plotly.com',m:'JS'},
+      {e:'🔹',n:'Highcharts',d:'Профессиональные диаграммы',u:'https://highcharts.com',m:'JS'},
+      {e:'🔹',n:'Google Charts',d:'Графики от Google',u:'https://developers.google.com/chart',m:'JS'},
+      {e:'🔹',n:'FusionCharts',d:'Более 100 типов диаграмм',u:'https://fusioncharts.com',m:'JS'},
+      {e:'🔹',n:'AnyChart',d:'Гибкие визуализации',u:'https://anychart.com',m:'JS'},
+      {e:'🔹',n:'AMCharts',d:'Карты и диаграммы',u:'https://amcharts.com',m:'JS'},
+      {e:'🔹',n:'ECharts',d:'Визуализация от Apache',u:'https://echarts.apache.org',m:'JS'},
+      {e:'🔹',n:'CanvasJS',d:'Быстрые графики',u:'https://canvasjs.com',m:'JS'},
+      {e:'🔹',n:'ZingChart',d:'Мощные визуализации',u:'https://zingchart.com',m:'JS'},
+      {e:'🔹',n:'Sigma.js',d:'Визуализация графов',u:'https://sigmajs.org',m:'JS'},
+      {e:'🔹',n:'Cytoscape.js',d:'Анализ сетей и графов',u:'https://js.cytoscape.org',m:'JS'},
+      {e:'🔹',n:'Gephi',d:'Анализ и визуализация графов',u:'https://gephi.org',m:'Desktop'},
+      {e:'🔹',n:'Neo4j Bloom',d:'Визуализация графовых баз данных',u:'https://neo4j.com/bloom',m:'Desktop'},
+      {e:'🔹',n:'Linkurious',d:'Анализ связанных данных',u:'https://linkurious.com',m:'Desktop'},
+      {e:'🔹',n:'KeyLines',d:'Визуализация связей',u:'https://keylines.com',m:'JS'},
+      {e:'🔹',n:'ReGraph',d:'Визуализация графов',u:'https://regraph.com',m:'JS'},
+      {e:'🔹',n:'Ogma',d:'Визуализация сетей',u:'https://ogma.linkurious.com',m:'JS'},
+      {e:'🔹',n:'Kumu',d:'Визуализация сложных систем',u:'https://kumu.io',m:'Web'},
+      {e:'🔹',n:'Miro',d:'Онлайн-доски для визуализации',u:'https://miro.com',m:'Web'},
+      {e:'🔹',n:'Lucidchart',d:'Диаграммы и схемы',u:'https://lucidchart.com',m:'Web'},
+      {e:'🔹',n:'Draw.io',d:'Бесплатные диаграммы',u:'https://draw.io',m:'Web'},
+      {e:'🔹',n:'MindMeister',d:'Ментальные карты',u:'https://mindmeister.com',m:'Web'},
+      {e:'🔹',n:'XMind',d:'Профессиональные ментальные карты',u:'https://xmind.net',m:'Desktop'},
+      {e:'🔹',n:'Coggle',d:'Простые ментальные карты',u:'https://coggle.it',m:'Web'},
+      {e:'🔹',n:'Mermaid',d:'Диаграммы из текста',u:'https://mermaid.js.org',m:'JS'},
+      {e:'🔹',n:'PlantUML',d:'Диаграммы из текста',u:'https://plantuml.com',m:'Web'},
+      {e:'🔹',n:'Graphviz',d:'Визуализация графов',u:'https://graphviz.org',m:'Desktop'},
+      {e:'🔹',n:'RawGraphs',d:'Визуализация данных',u:'https://rawgraphs.io',m:'Web'},
+      {e:'🔹',n:'Flourish',d:'Красивые интерактивные графики',u:'https://flourish.studio',m:'Web'},
+      {e:'🔹',n:'Datawrapper',d:'Простые графики и карты',u:'https://datawrapper.de',m:'Web'},
+      {e:'🔹',n:'Infogram',d:'Инфографика и дашборды',u:'https://infogram.com',m:'Web'},
+      {e:'🔹',n:'Piktochart',d:'Создание инфографики',u:'https://piktochart.com',m:'Web'},
+      {e:'🔹',n:'Canva',d:'Дизайн и инфографика',u:'https://canva.com',m:'Web'},
+      {e:'🔹',n:'Visme',d:'Визуализация данных',u:'https://visme.co',m:'Web'},
+      {e:'🔹',n:'Genially',d:'Интерактивные презентации',u:'https://genially.com',m:'Web'},
+      {e:'🔹',n:'Prezi',d:'Динамические презентации',u:'https://prezi.com',m:'Web'},
+      {e:'🔹',n:'Beautiful.ai',d:'Умные презентации',u:'https://beautiful.ai',m:'Web'},
+      {e:'🔹',n:'Slides',d:'Онлайн-презентации',u:'https://slides.com',m:'Web'},
+      {e:'🔹',n:'Sway',d:'Интерактивные отчеты',u:'https://sway.com',m:'Web'},
+      {e:'🔹',n:'Zeppelin',d:'Аналитика и визуализация',u:'https://zeppelin.apache.org',m:'Web'}
+    ]
+  }
+};
+
+// Обновляем категории в меню
+const cats = [
+  {s:'Главная',items:[{id:'home',ic:'📊',n:'Дашборд',c:'all'}]},
+  {s:'Поиск по данным',items:[{id:'phone',ic:'📱',n:'Телефон'},{id:'email',ic:'📧',n:'Email'},{id:'username',ic:'👤',n:'Username'},{id:'ip',ic:'🌐',n:'IP'},{id:'domain',ic:'🔗',n:'Домен'}]},
+  {s:'Разведка',items:[{id:'social',ic:'💬',n:'Соцсети'},{id:'breach',ic:'💀',n:'Утечки'},{id:'geo',ic:'📍',n:'Геолокация'},{id:'image',ic:'🖼',n:'По фото'},{id:'search_engines',ic:'🔎',n:'Поисковик'},{id:'darkweb',ic:'🕸',n:'Dark Web'},{id:'people',ic:'👥',n:'Поиск людей'},{id:'individuals',ic:'🪪',n:'Физ. лица'}]},
+  {s:'Инструменты',items:[{id:'recovery',ic:'♻️',n:'Восстановление'},{id:'databases',ic:'🗄',n:'Базы данных'},{id:'parsers',ic:'🔄',n:'Парсеры'},{id:'software',ic:'💻',n:'Программы'},{id:'documents',ic:'📄',n:'Документы'},{id:'frameworks',ic:'🧰',n:'Фреймворки'}]},
+  {s:'Специализированные',items:[{id:'military',ic:'🎖',n:'Военные'},{id:'citizenship',ic:'🛂',n:'Гражданство'},{id:'url_analysis',ic:'🔬',n:'Анализ URL'},{id:'archives',ic:'🏛',n:'Архивы'},{id:'politics',ic:'🍎',n:'Политики'},{id:'visualization',ic:'📊',n:'Визуализация'}]},
+  {s:'Прочее',items:[{id:'project',ic:'📂',n:'Проекты'},{id:'help',ic:'❓',n:'Помощь'},{id:'support',ic:'🆘',n:'Поддержка'}]}
+];
+
+let totalTools = 0;
+Object.values(D).forEach(c => totalTools += c.tools.length);
+
+let currentUser = null;
+let currentUserData = null;
+
+function isAdmin(){return currentUserData?.role === 'admin'}
+function isPro(){return currentUserData?.pro === true || isAdmin()}
+
+function buildMenuHTML(){
+  let sh = '';
+  cats.forEach((g, gi) => {
+    sh += `<div class="st">${g.s}</div>`;
+    g.items.forEach(i => {
+      let cnt = i.c === 'all' ? totalTools : (D[i.id]?.tools.length || '');
+      const isProCategory = D[i.id]?.pro;
+      const proLock = isProCategory && !isPro();
+      sh += `<div class="ni${i.id === 'home' ? ' a' : ''}" onclick="go('${i.id}')" data-s="${i.id}">
+        <span class="ic">${i.ic}</span><span class="nm">${i.n}</span>
+        ${proLock ? '<span class="pro-lock">🔒 PRO</span>' : (cnt !== '' ? `<span class="b">${cnt}</span>` : '')}
+      </div>`;
+      if (i.id === 'home') {
+        sh += `<div class="bot-pinned" onclick="go('project')">
+          <div class="bot-pinned-icon">🤖</div>
+          <div class="bot-pinned-info">
+            <div class="bot-pinned-name">SpectraOSINT <span class="bot-pinned-tag">BOT</span></div>
+            <div class="bot-pinned-desc">Телеграм-бот с 5000+ инструментами</div>
+          </div>
+          <div class="bot-pinned-arrow">›</div>
+        </div>`;
+      }
+    });
+    if (gi < cats.length - 1) sh += '<div class="sd"></div>';
+  });
+  if (isAdmin()) {
+    sh += '<div class="sd"></div>';
+    sh += '<div class="st">Администрирование</div>';
+    sh += `<div class="ni" onclick="go('admin')" data-s="admin"><span class="ic">⚙️</span><span class="nm">Админ-панель</span></div>`;
+  }
+  return sh;
+}
+
+function rebuildMenus(){
+  document.getElementById('side').innerHTML = buildMenuHTML();
+  document.getElementById('mobileMenu').innerHTML = buildMenuHTML();
+}
+
+function buildContent(){
+  const CI = document.getElementById('CI');
+  let ch = '';
+
+  const proCount = Object.values(D).filter(v => v.pro).length;
+
+  ch += `<div class="sec a" id="s-home">
+    <div class="ph"><h1>FusionOSINT</h1><div class="bc">fusion / dashboard</div></div>
+    <div class="stb">
+      <div class="sc"><div class="si2">🔧</div><div><div class="sn">${totalTools}</div><div class="sd2">Инструментов</div></div></div>
+      <div class="sc"><div class="si2">📂</div><div><div class="sn">${Object.keys(D).length}</div><div class="sd2">Категорий</div></div></div>
+      <div class="sc"><div class="si2">⭐</div><div><div class="sn">${proCount}</div><div class="sd2">PRO разделов</div></div></div>
+    </div>
+    <div class="hg">`;
+  Object.entries(D).forEach(([k, v]) => {
+    const locked = v.pro && !isPro();
+    ch += `<div class="hc" onclick="go('${k}')"><div class="hct">${v.title}${v.pro ? (locked ? ' 🔒' : ' ⭐') : ''}</div><div class="hcc">${v.tools.length} инструментов${v.pro ? ' · PRO' : ''}</div></div>`;
+  });
+  ch += `</div></div>`;
+
+  Object.entries(D).forEach(([k, v]) => {
+    ch += `<div class="sec" id="s-${k}">`;
+    if (v.pro && !isPro()) {
+      ch += `<div class="ph"><h1>${v.title} 🔒</h1><div class="bc"><a onclick="go('home')">fusion</a> / ${v.title.split(' ').slice(1).join(' ')}</div></div>
+        <div class="paywall">
+          <h2>⭐ PRO доступ</h2>
+          <p>Этот раздел доступен только подписчикам FusionOSINT PRO</p>
+          <div class="price">Скоро <span>/ анонс</span></div>
+          <ul class="features">
+            <li>✅ Доступ ко всем PRO разделам</li>
+            <li>✅ Приоритетная поддержка</li>
+            <li>✅ Ранний доступ к новым инструментам</li>
+          </ul>
+          <button class="paywall-btn" onclick="alert('Подписка PRO скоро будет доступна!')">Узнать первым 🔔</button>
+        </div>`;
+    } else {
+      ch += `<div class="ph"><h1>${v.title}${v.pro ? ' ⭐' : ''}</h1><div class="bc"><a onclick="go('home')">fusion</a> / ${v.title.split(' ').slice(1).join(' ')}</div></div>`;
+      ch += `<div class="spi">📊 Инструментов: ${v.tools.length}${v.pro ? ' · PRO раздел' : ''}</div><div class="tg">`;
+      v.tools.forEach(t => {
+        ch += `<div class="tc"><div class="th"><div class="tn"><span class="te">${t.e}</span>${t.n}</div><span class="tg2">${t.m || 'Web'}</span></div><div class="td2">${t.d}</div><div class="tft"><a href="${t.u}" target="_blank" rel="noopener" class="tl">Открыть →</a><span class="tm">${t.m || 'Web'}</span></div></div>`;
+      });
+      ch += `</div>`;
+    }
+    ch += `</div>`;
+  });
+
+  ch += `<div class="sec" id="s-help"><div class="ph"><h1>❓ Помощь</h1><div class="bc"><a onclick="go('home')">fusion</a> / помощь</div></div>
+    <div class="spi">Категорий: ${Object.keys(D).length} | Инструментов: ${totalTools}</div><div class="hg">`;
+  Object.entries(D).forEach(([k, v]) => {
+    ch += `<div class="hc" onclick="go('${k}')"><div class="hct">${v.title}${v.pro ? ' ⭐' : ''}</div><div class="hcc">${v.tools.length} инструментов</div></div>`;
+  });
+  ch += `</div></div>`;
+
+  ch += `<div class="sec" id="s-support">
+    <div class="ph"><h1>🆘 Поддержка</h1><div class="bc"><a onclick="go('home')">fusion</a> / поддержка</div></div>
+    <div style="background:var(--card);border:1px solid var(--border-bright);border-radius:12px;padding:1.5rem">
+      <h2 style="margin-bottom:1rem;font-size:1.1rem">💬 Связаться</h2>
+      <div style="display:flex;align-items:center;gap:8px;padding:.8rem;background:var(--accent-m);border:1px solid var(--border);border-radius:8px;font-size:.82rem;color:var(--green);font-weight:600;margin-bottom:1rem">
+        <span style="width:8px;height:8px;background:var(--green);border-radius:50%;display:inline-block"></span> Онлайн · Ответ: до 15 мин
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:.7rem">
+        <div style="font-weight:700;margin-bottom:.3rem">🤖 Telegram-бот</div>
+        <div style="font-size:.8rem;color:var(--t2);margin-bottom:.8rem">Задайте вопрос или сообщите об ошибке.</div>
+        <a href="https://t.me/Spectra_utilities_bot" target="_blank" rel="noopener" style="display:inline-flex;padding:10px 18px;background:var(--btn-bg);border-radius:7px;color:var(--btn-color);font-weight:700;font-size:.82rem;text-decoration:none">Перейти →</a>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem">
+        <div style="font-weight:700;margin-bottom:.3rem">👤 Владелец — @kexaje</div>
+        <div style="font-size:.8rem;color:var(--t2);margin-bottom:.8rem">Создатель SpectraOSINT</div>
+        <a href="https://t.me/kexaje" target="_blank" rel="noopener" style="display:inline-flex;padding:10px 18px;background:transparent;border:1px solid var(--border-bright);border-radius:7px;color:var(--t1);font-weight:700;font-size:.82rem;text-decoration:none">Написать →</a>
+      </div>
+    </div>
+  </div>`;
+
+  ch += `<div class="sec" id="s-admin"><div class="ph"><h1>⚙️ Админ-панель</h1><div class="bc"><a onclick="go('home')">fusion</a> / admin</div></div><div id="adminContent">Загрузка...</div></div>`;
+
+  CI.innerHTML = ch;
+}
+
+function go(id){
+  document.querySelectorAll('.sec').forEach(e => e.classList.remove('a'));
+  document.querySelectorAll('.ni').forEach(e => e.classList.remove('a'));
+  const s = document.getElementById('s-' + id);
+  if (s) s.classList.add('a');
+  document.querySelectorAll(`.ni[data-s="${id}"]`).forEach(n => n.classList.add('a'));
+  closeMobileMenu();
+  if (id === 'admin' && isAdmin()) loadAdminPanel();
+  setTimeout(() => window.scrollTo({top: 0, behavior: 'smooth'}), 50);
+}
+
+function toggleMobileMenu(){
+  const m = document.getElementById('mobileMenu');
+  const icon = document.getElementById('menuIcon');
+  if (m.classList.contains('open')) { closeMobileMenu(); }
+  else { m.classList.add('open'); icon.textContent = '✕'; }
+}
+function closeMobileMenu(){
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('menuIcon').textContent = '☰';
+}
+
+function theme(){
+  const h = document.documentElement, c = h.getAttribute('data-theme'), n = c === 'dark' ? 'light' : 'dark';
+  h.setAttribute('data-theme', n);
+  document.getElementById('thD').textContent = n === 'dark' ? '🌙' : '☀️';
+  try { localStorage.setItem('st', n) } catch(e) {}
+}
+
+try {
+  const s = localStorage.getItem('st');
+  if (s) { document.documentElement.setAttribute('data-theme', s); document.getElementById('thD').textContent = s === 'dark' ? '🌙' : '☀️' }
+} catch(e) {}
+
+window.addEventListener('resize', () => { if (window.innerWidth > 900) closeMobileMenu() });
+window.closeAuthModal = function(){ document.getElementById('authModal').classList.remove('show') };
+
+rebuildMenus();
+buildContent();
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('preloader').classList.add('hide');
+  }, 1200);
+});
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  signOut, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail,
+  updateProfile, GoogleAuthProvider, signInWithPopup, deleteUser,
+  RecaptchaVerifier, signInWithPhoneNumber
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc, getDocs, updateDoc,
+  collection, serverTimestamp, query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD-W4SmGBjTskk-SrAOTZ5Ke6VEoV5TFLg",
+  authDomain: "fusionosint.firebaseapp.com",
+  projectId: "fusionosint",
+  storageBucket: "fusionosint.firebasestorage.app",
+  messagingSenderId: "246261591242",
+  appId: "1:246261591242:web:1bd8c81d04484b03fc5833"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
+
+const authModal = document.getElementById('authModal');
+const authContent = document.getElementById('authContent');
+const userArea = document.getElementById('userArea');
+
+let confirmationResult = null;
+
+function showMsg(t, type = 'err'){
+  const m = document.getElementById('authMsg');
+  if (m) m.innerHTML = `<div class="msg ${type}"><span>${type === 'err' ? '⚠️' : type === 'ok' ? '✅' : 'ℹ️'}</span><span>${t}</span></div>`;
+}
+function clearMsg(){ const m = document.getElementById('authMsg'); if (m) m.innerHTML = '' }
+
+function trErr(c){
+  const e = {
+    'auth/email-already-in-use': 'Этот email уже зарегистрирован',
+    'auth/invalid-email': 'Неверный формат email',
+    'auth/operation-not-allowed': 'Метод входа отключён в Firebase Console',
+    'auth/weak-password': 'Пароль минимум 6 символов',
+    'auth/user-not-found': 'Пользователь не найден',
+    'auth/wrong-password': 'Неверный пароль',
+    'auth/invalid-credential': 'Неверный email или пароль',
+    'auth/too-many-requests': 'Слишком много попыток. Попробуйте позже',
+    'auth/network-request-failed': 'Нет интернета',
+    'auth/popup-closed-by-user': 'Окно закрыто',
+    'auth/unauthorized-domain': 'Домен не разрешён в Firebase',
+    'auth/invalid-phone-number': 'Неверный формат номера телефона',
+    'auth/missing-phone-number': 'Введите номер телефона',
+    'auth/invalid-verification-code': 'Неверный код подтверждения',
+  };
+  return e[c] || `Ошибка: ${c}`;
+}
+
+window.openAuthModal = function(mode = 'login'){
+  authModal.classList.add('show');
+  if (mode === 'login') showLoginForm();
+  else if (mode === 'register') showRegisterForm();
+  else if (mode === 'profile') showProfileForm();
+};
+
+function showLoginForm(){
+  authContent.innerHTML = `
+    <button class="auth-close" onclick="closeAuthModal()">✕</button>
+    <h1>🔐 Вход</h1>
+    <p class="subtitle">Войдите в FusionOSINT</p>
+    <div id="authMsg"></div>
+    <div class="field"><label>Email</label><input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email"></div>
+    <div class="field"><label>Пароль</label><input type="password" id="authPassword" placeholder="••••••••" autocomplete="current-password"></div>
+    <div class="forgot-link"><span onclick="showForgotForm()">Забыли пароль?</span></div>
+    <button class="auth-btn" id="loginBtn" onclick="doLogin()">Войти</button>
+    <button class="auth-btn google" onclick="doGoogleLogin()">
+      <svg width="16" height="16" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.2 1.12-.84 2.07-1.79 2.71v2.26h2.9c1.7-1.56 2.69-3.86 2.69-6.61z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.95-2.18l-2.9-2.26c-.8.54-1.83.86-3.05.86-2.34 0-4.32-1.58-5.03-3.71H.96v2.33C2.44 15.98 5.48 18 9 18z"/><path fill="#FBBC05" d="M3.97 10.71A5.41 5.41 0 0 1 3.68 9c0-.59.1-1.17.29-1.71V4.96H.96A8.997 8.997 0 0 0 0 9c0 1.45.35 2.83.96 4.04l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+      Google
+    </button>
+    <button class="auth-btn phone-btn" onclick="showPhoneForm()">📱 Вход по телефону</button>
+    <div class="switch-link">Нет аккаунта? <span onclick="showRegisterForm()">Зарегистрироваться</span></div>
+  `;
+  document.getElementById('authPassword')?.addEventListener('keypress', e => { if (e.key === 'Enter') doLogin() });
+}
+window.showLoginForm = showLoginForm;
+
+window.doLogin = async function(){
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const btn = document.getElementById('loginBtn');
+  if (!email || !password) return showMsg('Заполните все поля');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>'; clearMsg();
+  try { await signInWithEmailAndPassword(auth, email, password); closeAuthModal() }
+  catch(e) { showMsg(trErr(e.code)); btn.disabled = false; btn.innerHTML = 'Войти' }
+};
+
+function showRegisterForm(){
+  authContent.innerHTML = `
+    <button class="auth-close" onclick="closeAuthModal()">✕</button>
+    <h1>📝 Регистрация</h1>
+    <p class="subtitle">Создайте аккаунт</p>
+    <div id="authMsg"></div>
+    <div class="field"><label>Имя</label><input type="text" id="authName" placeholder="Ваше имя" autocomplete="name"></div>
+    <div class="field"><label>Email</label><input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email"></div>
+    <div class="field"><label>Пароль</label><input type="password" id="authPassword" placeholder="••••••••" autocomplete="new-password"><div class="hint">Минимум 6 символов</div></div>
+    <button class="auth-btn" id="regBtn" onclick="doRegister()">Создать аккаунт</button>
+    <button class="auth-btn google" onclick="doGoogleLogin()">
+      <svg width="16" height="16" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.2 1.12-.84 2.07-1.79 2.71v2.26h2.9c1.7-1.56 2.69-3.86 2.69-6.61z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.95-2.18l-2.9-2.26c-.8.54-1.83.86-3.05.86-2.34 0-4.32-1.58-5.03-3.71H.96v2.33C2.44 15.98 5.48 18 9 18z"/><path fill="#FBBC05" d="M3.97 10.71A5.41 5.41 0 0 1 3.68 9c0-.59.1-1.17.29-1.71V4.96H.96A8.997 8.997 0 0 0 0 9c0 1.45.35 2.83.96 4.04l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+      Google
+    </button>
+    <div class="switch-link">Уже есть аккаунт? <span onclick="showLoginForm()">Войти</span></div>
+  `;
+  document.getElementById('authPassword')?.addEventListener('keypress', e => { if (e.key === 'Enter') doRegister() });
+}
+window.showRegisterForm = showRegisterForm;
+
+window.doRegister = async function(){
+  const name = document.getElementById('authName').value.trim();
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const btn = document.getElementById('regBtn');
+  if (!name || !email || !password) return showMsg('Заполните все поля');
+  if (password.length < 6) return showMsg('Пароль минимум 6 символов');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>'; clearMsg();
+  try {
+    const uc = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(uc.user, { displayName: name });
+    try { await setDoc(doc(db, 'users', uc.user.uid), { name, email, createdAt: serverTimestamp(), role: 'user', pro: false, provider: 'email', lastLogin: serverTimestamp() }) } catch(e) { console.warn(e) }
+    try { await sendEmailVerification(uc.user) } catch(e) {}
+    closeAuthModal();
+  } catch(e) { showMsg(trErr(e.code)); btn.disabled = false; btn.innerHTML = 'Создать аккаунт' }
+};
+
+window.showPhoneForm = function(){
+  authContent.innerHTML = `
+    <button class="auth-close" onclick="closeAuthModal()">✕</button>
+    <h1>📱 Вход по телефону</h1>
+    <p class="subtitle">Введите номер в международном формате</p>
+    <div id="authMsg"></div>
+    <div class="field"><label>Номер телефона</label><input type="tel" id="authPhone" placeholder="+7 999 123 45 67" autocomplete="tel"></div>
+    <div id="recaptcha-container"></div>
+    <button class="auth-btn phone-btn" id="sendCodeBtn" onclick="sendPhoneCode()">Отправить код</button>
+    <div class="switch-link"><span onclick="showLoginForm()">← Вернуться</span></div>
+  `;
+  try {
+    if (window.recaptchaVerifier) { window.recaptchaVerifier.clear(); }
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'normal' });
+    window.recaptchaVerifier.render();
+  } catch(e) { console.error(e); showMsg('Ошибка reCAPTCHA', 'warn') }
+};
+
+window.sendPhoneCode = async function(){
+  const phone = document.getElementById('authPhone').value.trim();
+  if (!phone) return showMsg('Введите номер телефона');
+  const btn = document.getElementById('sendCodeBtn');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>'; clearMsg();
+  try {
+    confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+    showCodeForm(phone);
+  } catch(e) { showMsg(trErr(e.code)); btn.disabled = false; btn.innerHTML = 'Отправить код' }
+};
+
+function showCodeForm(phone){
+  authContent.innerHTML = `
+    <button class="auth-close" onclick="closeAuthModal()">✕</button>
+    <h1>📱 Код подтверждения</h1>
+    <p class="subtitle">Отправили SMS на ${phone}</p>
+    <div id="authMsg"></div>
+    <div class="field"><label>Код из SMS</label><input type="text" id="authCode" placeholder="123456" maxlength="6" autocomplete="one-time-code" inputmode="numeric"></div>
+    <button class="auth-btn phone-btn" id="verifyBtn" onclick="verifyCode()">Подтвердить</button>
+    <div class="switch-link"><span onclick="showPhoneForm()">← Отправить заново</span></div>
+  `;
+  document.getElementById('authCode')?.addEventListener('keypress', e => { if (e.key === 'Enter') verifyCode() });
+}
+
+window.verifyCode = async function(){
+  const code = document.getElementById('authCode').value.trim();
+  if (!code) return showMsg('Введите код');
+  const btn = document.getElementById('verifyBtn');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>'; clearMsg();
+  try {
+    const result = await confirmationResult.confirm(code);
+    const user = result.user;
+    try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (!userDoc.exists()) {
+        await setDoc(doc(db, 'users', user.uid), {
+          name: user.displayName || user.phoneNumber,
+          phone: user.phoneNumber, email: user.email || '',
+          createdAt: serverTimestamp(),
+          role: 'user', pro: false, provider: 'phone', lastLogin: serverTimestamp()
+        });
+      }
+    } catch(e) { console.warn(e) }
+    closeAuthModal();
+  } catch(e) { showMsg(trErr(e.code)); btn.disabled = false; btn.innerHTML = 'Подтвердить' }
+};
+
+window.doGoogleLogin = async function(){
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+    try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (!userDoc.exists()) {
+        await setDoc(doc(db, 'users', user.uid), { name: user.displayName, email: user.email, photoURL: user.photoURL, createdAt: serverTimestamp(), role: 'user', pro: false, provider: 'google', lastLogin: serverTimestamp() });
+      } else {
+        await updateDoc(doc(db, 'users', user.uid), { lastLogin: serverTimestamp() });
+      }
+    } catch(e) { console.warn(e) }
+    closeAuthModal();
+  } catch(e) { if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') showMsg(trErr(e.code)) }
+};
+
+window.showForgotForm = function(){
+  authContent.innerHTML = `
+    <button class="auth-close" onclick="closeAuthModal()">✕</button>
+    <h1>🔑 Восстановление</h1>
+    <p class="subtitle">Введите email для сброса пароля</p>
+    <div id="authMsg"></div>
+    <div class="field"><label>Email</label><input type="email" id="authEmail" placeholder="you@example.com"></div>
+    <button class="auth-btn" id="forgotBtn" onclick="doForgot()">Отправить ссылку</button>
+    <div class="switch-link"><span onclick="showLoginForm()">← Вернуться</span></div>
+  `;
+};
+
+window.doForgot = async function(){
+  const email = document.getElementById('authEmail').value.trim();
+  const btn = document.getElementById('forgotBtn');
+  if (!email) return showMsg('Введите email');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>';
+  try { await sendPasswordResetEmail(auth, email); showMsg('Письмо отправлено!', 'ok'); btn.innerHTML = 'Отправлено ✓' }
+  catch(e) { showMsg(trErr(e.code)); btn.disabled = false; btn.innerHTML = 'Отправить ссылку' }
+};
+
+async function showProfileForm(){
+  const user = auth.currentUser;
+  if (!user) return showLoginForm();
+  
+  const name = user.displayName || currentUserData?.name || 'Пользователь';
+  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const createdAt = currentUserData?.createdAt?.toDate?.()?.toLocaleDateString('ru-RU') || (user.metadata?.creationTime ? new Date(user.metadata.creationTime).toLocaleDateString('ru-RU') : '—');
+  const provider = currentUserData?.provider || user.providerData[0]?.providerId || 'email';
+  const providerLabel = { google: 'Google', 'google.com': 'Google', phone: 'Телефон', email: 'Email' }[provider] || provider;
+  
+  authContent.innerHTML = `
+    <button class="auth-close" onclick="closeAuthModal()">✕</button>
+    <div class="profile-header">
+      ${user.photoURL ? `<div class="avatar"><img src="${user.photoURL}" alt=""></div>` : `<div class="avatar">${initials}</div>`}
+      <div class="profile-name">${name}</div>
+      <div class="profile-email">${user.email || user.phoneNumber || ''}</div>
+      ${user.emailVerified ? '<div class="verified-badge">✓ Подтверждён</div>' : ''}
+      ${currentUserData?.pro ? '<div class="profile-pro-badge">⭐ PRO</div>' : ''}
+      ${currentUserData?.role === 'admin' ? '<div class="verified-badge" style="background:rgba(239,68,68,.15);color:var(--red);border-color:rgba(239,68,68,.3)">🛡 Админ</div>' : ''}
+    </div>
+    <div id="authMsg"></div>
+    <div class="profile-info">
+      <div class="info-row"><span class="info-label">ID</span><span class="info-value">${user.uid.slice(0, 12)}...</span></div>
+      <div class="info-row"><span class="info-label">Регистрация</span><span class="info-value">${createdAt}</span></div>
+      <div class="info-row"><span class="info-label">Вход через</span><span class="info-value">${providerLabel}</span></div>
+      <div class="info-row"><span class="info-label">Роль</span><span class="info-value">${currentUserData?.role || 'user'}</span></div>
+      <div class="info-row"><span class="info-label">PRO</span><span class="info-value">${currentUserData?.pro ? '✅ Активна' : '❌ Нет'}</span></div>
+    </div>
+    <div class="profile-actions">
+      ${!user.emailVerified && user.email ? '<button class="auth-btn" onclick="resendVerify()">📧 Подтвердить email</button>' : ''}
+      <button class="auth-btn secondary" onclick="doLogout()">Выйти</button>
+      <button class="auth-btn secondary" onclick="confirmDel()" style="color:var(--red);border-color:rgba(239,68,68,.3)">🗑 Удалить аккаунт</button>
+    </div>
+  `;
+}
+
+window.resendVerify = async function(){ try { await sendEmailVerification(auth.currentUser); showMsg('Письмо отправлено!', 'ok') } catch(e) { showMsg(trErr(e.code)) } };
+window.confirmDel = function(){ if (confirm('Удалить аккаунт? Это необратимо!')) doDel() };
+async function doDel(){ try { await deleteUser(auth.currentUser); closeAuthModal() } catch(e) { if (e.code === 'auth/requires-recent-login') alert('Войдите заново для удаления'); else showMsg(trErr(e.code)) } }
+window.doLogout = async function(){ await signOut(auth); closeAuthModal() };
+
+window.loadAdminPanel = async function(){
+  const cont = document.getElementById('adminContent');
+  if (!isAdmin()) { cont.innerHTML = '<p style="color:var(--red)">Нет доступа</p>'; return }
+  cont.innerHTML = '<p>Загрузка пользователей...</p>';
+  
+  try {
+    const q2 = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+    const snapshot = await getDocs(q2);
+    const users = [];
+    snapshot.forEach(d => { users.push({ uid: d.id, ...d.data() }) });
+    
+    const totalUsers = users.length;
+    const proUsers = users.filter(u => u.pro).length;
+    const admins = users.filter(u => u.role === 'admin').length;
+    
+    let html = `
+    <div class="admin-stats">
+      <div class="admin-stat"><div class="num">${totalUsers}</div><div class="lbl">Всего</div></div>
+      <div class="admin-stat"><div class="num" style="color:var(--pro)">${proUsers}</div><div class="lbl">PRO</div></div>
+      <div class="admin-stat"><div class="num" style="color:var(--red)">${admins}</div><div class="lbl">Админов</div></div>
+    </div>
+    <input class="admin-search" placeholder="🔍 Поиск..." oninput="filterAdminTable(this.value)">
+    <div class="admin-scroll">
+    <table class="admin-table" id="adminTable">
+      <thead><tr><th>Пользователь</th><th>Роль</th><th>PRO</th><th>Вход</th><th>Дата</th><th>Действия</th></tr></thead>
+      <tbody>`;
+    
+    users.forEach(u => {
+      const name = u.name || u.email || u.phone || '—';
+      const email = u.email || u.phone || '—';
+      const date = u.createdAt?.toDate?.()?.toLocaleDateString('ru-RU') || '—';
+      const lastLogin = u.lastLogin?.toDate?.()?.toLocaleDateString('ru-RU') || '—';
+      const provider = u.provider || 'email';
+      const provIcon = { google: '🟢', phone: '📱', email: '📧' }[provider] || '📧';
+      
+      html += `<tr data-search="${(name + email).toLowerCase()}">
+        <td><strong>${name}</strong><br><span style="font-size:.7rem;color:var(--t3)">${email}</span><br><span style="font-size:.6rem;color:var(--t3)">ID: ${u.uid.slice(0, 10)}...</span><br><span style="font-size:.6rem;color:var(--t3)">Был: ${lastLogin}</span></td>
+        <td><span class="admin-badge role-${u.role || 'user'}">${u.role || 'user'}</span></td>
+        <td><span class="admin-badge pro-${u.pro ? 'yes' : 'no'}">${u.pro ? '✅ PRO' : '—'}</span></td>
+        <td>${provIcon}</td>
+        <td style="font-size:.75rem;white-space:nowrap">${date}</td>
+        <td>
+          <button class="admin-action" onclick="adminTogglePro('${u.uid}', ${!u.pro})">${u.pro ? 'Забрать PRO' : 'Выдать PRO'}</button>
+          <button class="admin-action ${u.role === 'admin' ? 'danger' : ''}" onclick="adminToggleRole('${u.uid}', '${u.role === 'admin' ? 'user' : 'admin'}')">${u.role === 'admin' ? 'Убрать админа' : 'Сделать админом'}</button>
+        </td>
+      </tr>`;
+    });
+    
+    html += `</tbody></table></div>`;
+    cont.innerHTML = html;
+  } catch(e) {
+    cont.innerHTML = `<p style="color:var(--red)">Ошибка: ${e.message}</p><p style="font-size:.8rem;color:var(--t3);margin-top:.5rem">Проверьте правила Firestore.</p>`;
+  }
+};
+
+window.filterAdminTable = function(q){
+  document.querySelectorAll('#adminTable tbody tr').forEach(r => {
+    r.style.display = r.dataset.search.includes(q.toLowerCase()) ? '' : 'none';
+  });
+};
+
+window.adminTogglePro = async function(uid, value){
+  if (!confirm(`${value ? 'Выдать' : 'Забрать'} PRO подписку?`)) return;
+  try { await updateDoc(doc(db, 'users', uid), { pro: value }); loadAdminPanel() } catch(e) { alert('Ошибка: ' + e.message) }
+};
+
+window.adminToggleRole = async function(uid, role){
+  if (!confirm(`Изменить роль на "${role}"?`)) return;
+  try {
+    await updateDoc(doc(db, 'users', uid), { role });
+    loadAdminPanel();
+    if (uid === auth.currentUser?.uid) { currentUserData.role = role; rebuildMenus(); buildContent() }
+  } catch(e) { alert('Ошибка: ' + e.message) }
+};
+
+function updateUserArea(user){
+  if (user) {
+    const name = user.displayName || user.email?.split('@')[0] || user.phoneNumber || 'User';
+    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    userArea.innerHTML = `
+      <button class="user-btn" onclick="openAuthModal('profile')">
+        ${user.photoURL ? `<div class="ua"><img src="${user.photoURL}" alt=""></div>` : `<div class="ua">${initials}</div>`}
+        <span class="un">${name}</span>
+        ${currentUserData?.pro ? '<span class="pro-tag">PRO</span>' : ''}
+      </button>
+    `;
+  } else {
+    userArea.innerHTML = `<button class="login-btn" onclick="openAuthModal('login')">Войти</button>`;
+  }
+}
+
+onAuthStateChanged(auth, async (user) => {
+  window.currentUser = user;
+  
+  if (user) {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists()) {
+        window.currentUserData = userDoc.data();
+      } else {
+        const newData = {
+          name: user.displayName || user.email?.split('@')[0] || user.phoneNumber,
+          email: user.email || '', phone: user.phoneNumber || '',
+          photoURL: user.photoURL || '',
+          createdAt: serverTimestamp(), lastLogin: serverTimestamp(),
+          role: 'user', pro: false,
+          provider: user.providerData[0]?.providerId || 'email'
+        };
+        await setDoc(doc(db, 'users', user.uid), newData);
+        window.currentUserData = newData;
+      }
+      try { await updateDoc(doc(db, 'users', user.uid), { lastLogin: serverTimestamp() }) } catch(e) {}
+    } catch(e) {
+      console.warn(e);
+      window.currentUserData = { role: 'user', pro: false };
+    }
+  } else {
+    window.currentUserData = null;
+  }
+  
+  updateUserArea(user);
+  rebuildMenus();
+  buildContent();
+});
+</script>
+</body>
+</html>
+```
